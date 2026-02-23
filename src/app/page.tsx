@@ -41,7 +41,7 @@ export default async function HomePage() {
             Did something good? Don&apos;t be shy. Tell everyone.
           </p>
 
-          <div className="flex gap-3 justify-center mt-12">
+          <div className="flex flex-wrap gap-3 justify-center mt-12">
             <Link
               href="/sign-up"
               className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[var(--accent)] text-[#0a0a0b] font-bold text-sm hover:brightness-110 transition-all shadow-lg shadow-[rgba(52,211,153,0.25)] hover:shadow-xl hover:shadow-[rgba(52,211,153,0.35)]"
@@ -58,6 +58,16 @@ export default async function HomePage() {
               I already brag here
             </Link>
           </div>
+
+          <Link
+            href="/feed"
+            className="inline-flex items-center gap-1.5 mt-6 text-sm text-[var(--text-tertiary)] hover:text-[var(--accent)] font-medium transition-colors"
+          >
+            Or browse the feed first
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
 
           <div className="flex items-center justify-center gap-3 mt-16">
             <div className="flex -space-x-2.5">

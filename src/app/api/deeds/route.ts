@@ -9,9 +9,6 @@ import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
 
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");

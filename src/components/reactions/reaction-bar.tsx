@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ReactionButton } from "./reaction-button";
 import { REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
@@ -10,6 +11,7 @@ interface ReactionBarProps {
   initialCounts: Record<string, number>;
   initialUserReactions: string[];
   compact?: boolean;
+  sessionUserId?: string;
 }
 
 export function ReactionBar({
@@ -17,12 +19,19 @@ export function ReactionBar({
   initialCounts,
   initialUserReactions,
   compact,
+  sessionUserId,
 }: ReactionBarProps) {
   const [counts, setCounts] = useState(initialCounts);
   const [userReactions, setUserReactions] = useState<string[]>(initialUserReactions);
   const [pending, setPending] = useState(false);
+  const router = useRouter();
 
   async function toggleReaction(type: ReactionType) {
+    if (!sessionUserId) {
+      router.push("/sign-in");
+      return;
+    }
+
     if (pending) return;
 
     // Optimistic update

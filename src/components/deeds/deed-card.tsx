@@ -111,32 +111,43 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
               initialCounts={deed.reactionCounts}
               initialUserReactions={deed.userReactions}
               compact
+              sessionUserId={sessionUserId}
             />
             <div className="flex items-center gap-3 mt-2.5">
               <ShareButton deedId={deed.id} title={deed.title} />
-              <TranslateButton
-                text={originalText}
-                onTranslated={handleTranslated}
-                compact
-              />
-              <button
-                onClick={() => setShowComments(!showComments)}
-                className={`text-[11px] transition-colors font-medium ${
-                  showComments
-                    ? "text-[var(--accent)]"
-                    : "text-[var(--text-tertiary)] hover:text-[var(--accent)]"
-                }`}
-              >
-                {commentCount} {commentCount === 1 ? "comment" : "comments"}
-              </button>
-              <div className="ml-auto flex items-center gap-3">
-                <ReportButton deedId={deed.id} />
-                <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={sessionUserId} />
-              </div>
+              {sessionUserId && (
+                <TranslateButton
+                  text={originalText}
+                  onTranslated={handleTranslated}
+                  compact
+                />
+              )}
+              {sessionUserId ? (
+                <button
+                  onClick={() => setShowComments(!showComments)}
+                  className={`text-[11px] transition-colors font-medium ${
+                    showComments
+                      ? "text-[var(--accent)]"
+                      : "text-[var(--text-tertiary)] hover:text-[var(--accent)]"
+                  }`}
+                >
+                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                </button>
+              ) : (
+                <span className="text-[11px] text-[var(--text-tertiary)] font-medium">
+                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                </span>
+              )}
+              {sessionUserId && (
+                <div className="ml-auto flex items-center gap-3">
+                  <ReportButton deedId={deed.id} />
+                  <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={sessionUserId} />
+                </div>
+              )}
             </div>
           </div>
 
-          {showComments && (
+          {showComments && sessionUserId && (
             <InlineCommentSection
               deedId={deed.id}
               commentCount={commentCount}
