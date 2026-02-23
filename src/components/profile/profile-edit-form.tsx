@@ -79,8 +79,14 @@ export function ProfileEditForm({ user, onCancel }: ProfileEditFormProps) {
     setUploading(false);
 
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || "Failed to upload image");
+      let message = "Failed to upload image";
+      try {
+        const data = await res.json();
+        message = data.error || message;
+      } catch {
+        if (res.status === 413) message = "Image is too large. Try a smaller file.";
+      }
+      throw new Error(message);
     }
 
     const data = await res.json();
