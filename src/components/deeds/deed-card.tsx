@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { CategoryBadge } from "./category-badge";
 import { ReportButton } from "./report-button";
 import { PostActions } from "./post-actions";
+import { ShareButton } from "./share-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { TranslateButton } from "@/components/ui/translate-button";
 import { InlineCommentSection } from "@/components/comments/inline-comment-section";
@@ -112,6 +113,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
               compact
             />
             <div className="flex items-center gap-3">
+              <ShareButton deedId={deed.id} title={deed.title} />
               <TranslateButton
                 text={originalText}
                 onTranslated={handleTranslated}

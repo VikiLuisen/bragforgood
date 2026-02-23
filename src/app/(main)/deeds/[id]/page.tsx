@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { CategoryBadge } from "@/components/deeds/category-badge";
 import { ReportButton } from "@/components/deeds/report-button";
 import { PostActions } from "@/components/deeds/post-actions";
+import { ShareButton } from "@/components/deeds/share-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { CommentList } from "@/components/comments/comment-list";
 import { CommentForm } from "@/components/comments/comment-form";
@@ -154,6 +155,7 @@ export default async function DeedDetailPage({
                 initialCounts={reactionCounts}
                 initialUserReactions={userReactions}
               />
+              <ShareButton deedId={deed.id} title={deed.title} />
               <ReportButton deedId={deed.id} />
               <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={session?.user?.id} />
             </div>
