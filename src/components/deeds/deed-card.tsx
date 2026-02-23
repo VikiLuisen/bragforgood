@@ -105,14 +105,14 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
             )}
           </div>
 
-          <div className="mt-3.5 pt-3 border-t border-[var(--border)] flex items-center justify-between">
+          <div className="mt-3.5 pt-3 border-t border-[var(--border)]">
             <ReactionBar
               deedId={deed.id}
               initialCounts={deed.reactionCounts}
               initialUserReactions={deed.userReactions}
               compact
             />
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mt-2.5">
               <ShareButton deedId={deed.id} title={deed.title} />
               <TranslateButton
                 text={originalText}
@@ -129,8 +129,10 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
               >
                 {commentCount} {commentCount === 1 ? "comment" : "comments"}
               </button>
-              <ReportButton deedId={deed.id} />
-              <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={sessionUserId} />
+              <div className="ml-auto flex items-center gap-3">
+                <ReportButton deedId={deed.id} />
+                <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={sessionUserId} />
+              </div>
             </div>
           </div>
 
