@@ -66,7 +66,7 @@ export function ReactionBar({
   const reactionTypes = Object.keys(REACTION_CONFIG) as ReactionType[];
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-1.5">
       {reactionTypes.map((type) => (
         <ReactionButton
           key={type}

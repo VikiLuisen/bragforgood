@@ -32,7 +32,7 @@ export function ReactionButton({
     <button
       onClick={handleClick}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all",
+        "inline-flex items-center gap-0.5 rounded-full px-2 py-1 text-xs font-medium transition-all",
         popping && "reaction-pop",
         isActive
           ? "bg-[var(--accent-dim)] text-[var(--accent)] border border-[rgba(52,211,153,0.2)]"
