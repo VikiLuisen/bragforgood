@@ -17,7 +17,10 @@ export async function moderateDeed(
   category: string
 ): Promise<ModerationResult> {
   const client = getClient();
-  if (!client) return { approved: true };
+  if (!client) {
+    console.warn("Moderation: ANTHROPIC_API_KEY not set — rejecting content (fail-secure)");
+    return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
+  }
 
   try {
     const response = await client.messages.create({
@@ -56,15 +59,18 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
       approved: parsed.approved === true,
       reason: parsed.reason,
     };
-  } catch {
-    // If moderation fails, approve to not block users
-    return { approved: true };
+  } catch (err) {
+    console.error("Moderation API error:", err);
+    return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 }
 
 export async function moderateComment(body: string): Promise<ModerationResult> {
   const client = getClient();
-  if (!client) return { approved: true };
+  if (!client) {
+    console.warn("Moderation: ANTHROPIC_API_KEY not set — rejecting comment (fail-secure)");
+    return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
+  }
 
   try {
     const response = await client.messages.create({
@@ -101,7 +107,8 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
       approved: parsed.approved === true,
       reason: parsed.reason,
     };
-  } catch {
-    return { approved: true };
+  } catch (err) {
+    console.error("Comment moderation API error:", err);
+    return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 }

@@ -32,6 +32,10 @@ export async function POST(
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
+  if (deed.authorId === session.user.id) {
+    return NextResponse.json({ error: "You cannot react to your own post" }, { status: 400 });
+  }
+
   // Toggle: if reaction exists, remove it; otherwise create it
   const existing = await prisma.reaction.findUnique({
     where: {

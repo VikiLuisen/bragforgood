@@ -27,7 +27,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email },
         });
 
-        if (!user) return null;
+        if (!user) {
+          // Dummy bcrypt compare to prevent timing-based account enumeration
+          await bcrypt.compare(credentials.password as string, "$2a$12$000000000000000000000000000000000000000000000000000000");
+          return null;
+        }
 
         const passwordMatch = await bcrypt.compare(
           credentials.password as string,

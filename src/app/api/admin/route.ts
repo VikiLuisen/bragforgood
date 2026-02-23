@@ -2,11 +2,16 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ADMIN_EMAIL } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.email || session.user.email !== ADMIN_EMAIL) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (!rateLimit(`admin:${session.user.id}`, 30, 3600000)) {
+    return NextResponse.json({ error: "Too many admin requests" }, { status: 429 });
   }
 
   const [users, posts, reactionCount] = await Promise.all([

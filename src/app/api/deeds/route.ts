@@ -5,6 +5,7 @@ import { createDeedSchema } from "@/lib/validations/deed";
 import { moderateDeed } from "@/lib/moderation";
 import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -85,6 +86,10 @@ export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!rateLimit(`deed:${session.user.id}`, 10, 3600000)) {
+    return NextResponse.json({ error: "Too many posts. Slow down!" }, { status: 429 });
   }
 
   try {

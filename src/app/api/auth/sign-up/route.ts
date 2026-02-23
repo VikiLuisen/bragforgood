@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "An account with this email already exists" },
+        { error: "Sign-up failed. Please try again or use a different email." },
         { status: 409 }
       );
     }

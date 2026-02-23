@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       where: { id: user.id },
       data: {
         resetToken: hashedToken,
-        resetTokenExpiry: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+        resetTokenExpiry: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
       },
     });
 
