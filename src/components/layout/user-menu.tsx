@@ -42,6 +42,35 @@ export function UserMenu() {
             My Profile
           </Link>
           <div className="h-px bg-[var(--border)] mx-3" />
+          <Link
+            href="/impressum"
+            className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Impressum
+          </Link>
+          <Link
+            href="/privacy"
+            className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Privacy Policy
+          </Link>
+          <Link
+            href="/terms"
+            className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Terms
+          </Link>
+          <Link
+            href="/contact"
+            className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Contact
+          </Link>
+          <div className="h-px bg-[var(--border)] mx-3" />
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="block w-full text-left px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
