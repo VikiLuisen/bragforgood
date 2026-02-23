@@ -113,7 +113,7 @@ export default async function ProfilePage({
       <ProfileHeader user={profile} isOwnProfile={isOwnProfile} />
       <div>
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          {user.name}&apos;s Good Deeds
+          {user.name}&apos;s Posts
         </h2>
         <DeedFeed
           initialDeeds={formattedDeeds as never[]}

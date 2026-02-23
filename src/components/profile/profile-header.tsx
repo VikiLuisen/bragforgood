@@ -54,7 +54,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           <KarmaDisplay score={user.karmaScore} />
           <div className="text-center">
             <div className="text-3xl font-extrabold text-[var(--text-primary)]">{user.deedCount}</div>
-            <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-widest font-bold mt-0.5">Deeds</div>
+            <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-widest font-bold mt-0.5">Posts</div>
           </div>
           {(user.currentStreak != null && user.longestStreak != null) && (
             <StreakDisplay currentStreak={user.currentStreak} longestStreak={user.longestStreak} />

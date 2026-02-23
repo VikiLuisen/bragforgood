@@ -21,7 +21,7 @@ export async function GET(
   });
 
   if (!deed) {
-    return NextResponse.json({ error: "Deed not found" }, { status: 404 });
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
   const reactionTypes = Object.keys(REACTION_CONFIG) as ReactionType[];
@@ -65,7 +65,7 @@ export async function DELETE(
   const deed = await prisma.deed.findUnique({ where: { id } });
 
   if (!deed) {
-    return NextResponse.json({ error: "Deed not found" }, { status: 404 });
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
   if (deed.authorId !== session.user.id) {

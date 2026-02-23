@@ -24,7 +24,7 @@ export async function POST(
 
   const deed = await prisma.deed.findUnique({ where: { id: deedId } });
   if (!deed) {
-    return NextResponse.json({ error: "Deed not found" }, { status: 404 });
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
   // Toggle: if reaction exists, remove it; otherwise create it

@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     const moderation = await moderateDeed(title, description, category);
     if (!moderation.approved) {
       return NextResponse.json(
-        { error: moderation.reason || "This post doesn't appear to be about a good deed.", moderation: true },
+        { error: moderation.reason || "This post doesn't appear to be about a good deed. Try again!", moderation: true },
         { status: 400 }
       );
     }

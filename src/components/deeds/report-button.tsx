@@ -7,7 +7,7 @@ interface ReportButtonProps {
 }
 
 const REASONS = [
-  { value: "not_good_deed", label: "Not a good deed" },
+  { value: "not_good_deed", label: "Not a good post" },
   { value: "spam", label: "Spam / self-promotion" },
   { value: "offensive", label: "Offensive content" },
   { value: "other", label: "Other" },
