@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { CategoryBadge } from "./category-badge";
 import { ReportButton } from "./report-button";
+import { PostActions } from "./post-actions";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { TranslateButton } from "@/components/ui/translate-button";
 import { InlineCommentSection } from "@/components/comments/inline-comment-section";
@@ -127,6 +128,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
                 {commentCount} {commentCount === 1 ? "comment" : "comments"}
               </button>
               <ReportButton deedId={deed.id} />
+              <PostActions deedId={deed.id} authorId={deed.author.id} sessionUserId={sessionUserId} />
             </div>
           </div>
 
