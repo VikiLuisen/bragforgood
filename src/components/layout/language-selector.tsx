@@ -53,6 +53,7 @@ export function LanguageSelector() {
           <div className="py-1">
             <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
               Translate posts to
+              <span className="ml-1.5 normal-case tracking-normal text-[var(--accent)] opacity-70">— coming soon</span>
             </div>
             {languages.map(([code, name]) => (
               <button
