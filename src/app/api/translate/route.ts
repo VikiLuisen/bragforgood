@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
   try {
     const { text, targetLang } = await request.json();
 
-    if (!text || typeof text !== "string") {
-      return NextResponse.json({ error: "Text is required" }, { status: 400 });
+    if (!text || typeof text !== "string" || text.length > 5000) {
+      return NextResponse.json({ error: "Text is required and must be under 5000 characters" }, { status: 400 });
     }
 
     if (!targetLang || !(targetLang in SUPPORTED_LANGUAGES)) {

@@ -4,11 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { createCommentSchema } from "@/lib/validations/comment";
 import { moderateComment } from "@/lib/moderation";
 import { PAGE_SIZE } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id: deedId } = await params;
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");
@@ -48,6 +54,10 @@ export async function POST(
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!rateLimit(`comment:${session.user.id}`, 20, 3600000)) {
+    return NextResponse.json({ error: "Too many comments. Slow down!" }, { status: 429 });
   }
 
   const body = await request.json();

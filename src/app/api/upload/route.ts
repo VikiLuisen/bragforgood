@@ -33,7 +33,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const blob = await put(`deeds/${Date.now()}-${file.name}`, file, {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
+    const blob = await put(`deeds/${safeName}`, file, {
       access: "public",
     });
 

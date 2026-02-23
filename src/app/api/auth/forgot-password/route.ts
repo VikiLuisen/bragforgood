@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 function generateToken(): string {
   const bytes = new Uint8Array(32);
@@ -17,6 +18,11 @@ async function hashToken(token: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    if (!rateLimit(`forgot:${ip}`, 3, 3600000)) {
+      return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
+    }
+
     const body = await request.json();
     const parsed = forgotPasswordSchema.safeParse(body);
 

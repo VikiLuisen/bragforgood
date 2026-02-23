@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { signUpSchema } from "@/lib/validations/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    if (!rateLimit(`signup:${ip}`, 5, 3600000)) {
+      return NextResponse.json({ error: "Too many sign-up attempts. Try again later." }, { status: 429 });
+    }
+
     const body = await request.json();
     const parsed = signUpSchema.safeParse(body);
 

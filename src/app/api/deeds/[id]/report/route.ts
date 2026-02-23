@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(
   request: Request,
@@ -13,12 +14,21 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (!rateLimit(`report:${session.user.id}`, 10, 86400000)) {
+    return NextResponse.json({ error: "Too many reports. Try again later." }, { status: 429 });
+  }
+
   const body = await request.json();
   const reason = body.reason;
 
   if (!reason || !["not_good_deed", "spam", "offensive", "other"].includes(reason)) {
     return NextResponse.json({ error: "Invalid report reason" }, { status: 400 });
   }
+
+  // Sanitize optional details field
+  const details = typeof body.details === "string"
+    ? body.details.replace(/<[^>]*>/g, "").trim().slice(0, 500) || null
+    : null;
 
   const deed = await prisma.deed.findUnique({ where: { id: deedId } });
   if (!deed) {
@@ -39,7 +49,7 @@ export async function POST(
     prisma.report.create({
       data: {
         reason,
-        details: body.details || null,
+        details,
         userId: session.user.id,
         deedId,
       },
