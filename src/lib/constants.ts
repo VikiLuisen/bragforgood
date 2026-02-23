@@ -63,3 +63,5 @@ export const SUPPORTED_LANGUAGES = {
 } as const;
 
 export type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
+
+export const ADMIN_EMAIL = "vikiluisen@gmail.com";

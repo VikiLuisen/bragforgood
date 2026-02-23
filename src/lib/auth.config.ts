@@ -7,7 +7,7 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const protectedPaths = ["/feed", "/deeds", "/profile", "/leaderboard"];
+      const protectedPaths = ["/feed", "/deeds", "/profile", "/leaderboard", "/admin"];
       const isProtected = protectedPaths.some((path) =>
         nextUrl.pathname.startsWith(path)
       );

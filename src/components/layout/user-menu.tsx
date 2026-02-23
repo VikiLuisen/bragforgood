@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Avatar } from "@/components/ui/avatar";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 export function UserMenu() {
   const { data: session } = useSession();
@@ -48,6 +49,15 @@ export function UserMenu() {
           >
             Leaderboard
           </Link>
+          {session.user.email === ADMIN_EMAIL && (
+            <Link
+              href="/admin"
+              className="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Admin
+            </Link>
+          )}
           <div className="h-px bg-[var(--border)] mx-3" />
           <Link
             href="/impressum"
