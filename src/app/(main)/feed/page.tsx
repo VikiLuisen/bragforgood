@@ -87,6 +87,7 @@ export default async function FeedPage() {
       <DeedFeed
         initialDeeds={formattedDeeds as never[]}
         initialCursor={nextCursor}
+        sessionUserId={session?.user?.id}
       />
     </div>
   );

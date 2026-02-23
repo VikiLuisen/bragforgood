@@ -8,9 +8,10 @@ import type { DeedWithAuthor } from "@/types";
 interface DeedFeedProps {
   initialDeeds: DeedWithAuthor[];
   initialCursor: string | null;
+  sessionUserId?: string;
 }
 
-export function DeedFeed({ initialDeeds, initialCursor }: DeedFeedProps) {
+export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFeedProps) {
   const [deeds, setDeeds] = useState(initialDeeds);
   const [cursor, setCursor] = useState(initialCursor);
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ export function DeedFeed({ initialDeeds, initialCursor }: DeedFeedProps) {
   return (
     <div className="space-y-3">
       {deeds.map((deed) => (
-        <DeedCard key={deed.id} deed={deed} />
+        <DeedCard key={deed.id} deed={deed} sessionUserId={sessionUserId} />
       ))}
 
       {cursor && (

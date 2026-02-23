@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 
 interface CommentFormProps {
   deedId: string;
+  onCommentPosted?: (comment: { id: string; body: string; createdAt: string; user: { id: string; name: string; image: string | null } }) => void;
 }
 
-export function CommentForm({ deedId }: CommentFormProps) {
+export function CommentForm({ deedId, onCommentPosted }: CommentFormProps) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,8 +42,14 @@ export function CommentForm({ deedId }: CommentFormProps) {
       return;
     }
 
+    const data = await res.json();
     setBody("");
-    router.refresh();
+
+    if (onCommentPosted) {
+      onCommentPosted(data);
+    } else {
+      router.refresh();
+    }
   }
 
   return (

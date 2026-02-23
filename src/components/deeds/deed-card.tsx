@@ -7,15 +7,19 @@ import { CategoryBadge } from "./category-badge";
 import { ReportButton } from "./report-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { TranslateButton } from "@/components/ui/translate-button";
+import { InlineCommentSection } from "@/components/comments/inline-comment-section";
 import { formatDate } from "@/lib/utils";
 import type { DeedWithAuthor } from "@/types";
 
 interface DeedCardProps {
   deed: DeedWithAuthor;
+  sessionUserId?: string;
 }
 
-export function DeedCard({ deed }: DeedCardProps) {
+export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
+  const [showComments, setShowComments] = useState(false);
+  const [commentCount, setCommentCount] = useState(deed._count.comments);
 
   // Combine title and description for translation
   const originalText = `${deed.title}\n---\n${deed.description}`;
@@ -112,15 +116,28 @@ export function DeedCard({ deed }: DeedCardProps) {
                 onTranslated={handleTranslated}
                 compact
               />
-              <Link
-                href={`/deeds/${deed.id}`}
-                className="text-[11px] text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors font-medium"
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className={`text-[11px] transition-colors font-medium ${
+                  showComments
+                    ? "text-[var(--accent)]"
+                    : "text-[var(--text-tertiary)] hover:text-[var(--accent)]"
+                }`}
               >
-                {deed._count.comments} {deed._count.comments === 1 ? "comment" : "comments"}
-              </Link>
+                {commentCount} {commentCount === 1 ? "comment" : "comments"}
+              </button>
               <ReportButton deedId={deed.id} />
             </div>
           </div>
+
+          {showComments && (
+            <InlineCommentSection
+              deedId={deed.id}
+              commentCount={commentCount}
+              sessionUserId={sessionUserId}
+              onCommentCountChange={setCommentCount}
+            />
+          )}
         </div>
       </div>
     </article>
