@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { resetPasswordSchema } from "@/lib/validations/auth";
+
+async function hashToken(token: string): Promise<string> {
+  const encoded = new TextEncoder().encode(token);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(hashBuffer), (b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +23,7 @@ export async function POST(request: Request) {
 
     const { token, password } = parsed.data;
 
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedToken = await hashToken(token);
 
     const user = await prisma.user.findFirst({
       where: {
@@ -48,7 +53,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: "Password updated successfully",
     });
-  } catch {
+  } catch (err) {
+    console.error("Reset password error:", err);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }

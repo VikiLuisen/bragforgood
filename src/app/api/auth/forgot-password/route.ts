@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
+
+function generateToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function hashToken(token: string): Promise<string> {
+  const encoded = new TextEncoder().encode(token);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(hashBuffer), (b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 export async function POST(request: Request) {
   try {
@@ -29,8 +40,8 @@ export async function POST(request: Request) {
     }
 
     // Generate a random token and store its hash
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const rawToken = generateToken();
+    const hashedToken = await hashToken(rawToken);
 
     await prisma.user.update({
       where: { id: user.id },
@@ -43,7 +54,8 @@ export async function POST(request: Request) {
     await sendPasswordResetEmail(email, rawToken);
 
     return successResponse;
-  } catch {
+  } catch (err) {
+    console.error("Forgot password error:", err);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }
