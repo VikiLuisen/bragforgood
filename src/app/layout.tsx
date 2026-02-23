@@ -9,8 +9,25 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "bragforgood — Yeah, but for good.",
-  description: "The platform where bragging is encouraged — as long as it's about something good.",
+  metadataBase: new URL("https://www.bragforgood.com"),
+  title: {
+    default: "bragforgood — Yeah, but for good.",
+    template: "%s | bragforgood",
+  },
+  description: "The only place where showing off makes the world better. Brag about your good deeds, inspire others, and earn karma.",
+  keywords: ["good deeds", "social media", "bragging for good", "community", "volunteering", "kindness", "karma", "bragforgood"],
+  openGraph: {
+    type: "website",
+    siteName: "bragforgood",
+    title: "bragforgood — Yeah, but for good.",
+    description: "The only place where showing off makes the world better. Brag about your good deeds, inspire others, and earn karma.",
+    url: "https://www.bragforgood.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "bragforgood — Yeah, but for good.",
+    description: "The only place where showing off makes the world better. Brag about your good deeds, inspire others, and earn karma.",
+  },
 };
 
 export default function RootLayout({

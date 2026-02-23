@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Avatar } from "@/components/ui/avatar";
@@ -12,6 +13,34 @@ import { CommentForm } from "@/components/comments/comment-form";
 import { formatDate } from "@/lib/utils";
 import { REACTION_CONFIG, PAGE_SIZE } from "@/lib/constants";
 import type { ReactionType, DeedCategory } from "@/lib/constants";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const deed = await prisma.deed.findUnique({
+    where: { id },
+    select: { title: true, description: true, photoUrl: true, author: { select: { name: true } } },
+  });
+
+  if (!deed) return { title: "Post not found" };
+
+  const description = deed.description.length > 160
+    ? deed.description.slice(0, 157) + "..."
+    : deed.description;
+
+  return {
+    title: deed.title,
+    description: `${deed.author.name}: ${description}`,
+    openGraph: {
+      title: deed.title,
+      description: `${deed.author.name}: ${description}`,
+      ...(deed.photoUrl && { images: [{ url: deed.photoUrl }] }),
+    },
+  };
+}
 
 export default async function DeedDetailPage({
   params,

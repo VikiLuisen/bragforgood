@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ProfileHeader } from "@/components/profile/profile-header";
@@ -6,6 +7,30 @@ import { DeedFeed } from "@/components/deeds/deed-feed";
 import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
 import type { UserProfile } from "@/types";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}): Promise<Metadata> {
+  const { userId } = await params;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { name: true, bio: true, image: true },
+  });
+
+  if (!user) return { title: "User not found" };
+
+  return {
+    title: `${user.name}'s Profile`,
+    description: user.bio || `Check out ${user.name}'s good deeds on bragforgood.`,
+    openGraph: {
+      title: `${user.name} on bragforgood`,
+      description: user.bio || `Check out ${user.name}'s good deeds on bragforgood.`,
+      ...(user.image && { images: [{ url: user.image }] }),
+    },
+  };
+}
 
 export default async function ProfilePage({
   params,
