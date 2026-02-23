@@ -40,7 +40,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
     <article className="feed-item card p-5">
       <div className="flex items-start gap-3.5">
         <Link href={`/profile/${deed.author.id}`} className="shrink-0">
-          <Avatar name={deed.author.name} image={deed.author.image} size="md" />
+          <Avatar name={deed.author.name} image={deed.author.image} size="md" karmaScore={deed.author.karmaScore} />
         </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">

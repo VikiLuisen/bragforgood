@@ -41,6 +41,13 @@ export function UserMenu() {
           >
             My Profile
           </Link>
+          <Link
+            href="/leaderboard"
+            className="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Leaderboard
+          </Link>
           <div className="h-px bg-[var(--border)] mx-3" />
           <Link
             href="/impressum"

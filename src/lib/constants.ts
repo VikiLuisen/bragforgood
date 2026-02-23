@@ -20,6 +20,29 @@ export type ReactionType = keyof typeof REACTION_CONFIG;
 
 export const PAGE_SIZE = 10;
 
+// Karma tier system — thresholds, titles, and glow ring styles
+export const KARMA_TIERS = [
+  { min: 60, title: "Legend", ring: "ring-purple-400", glow: "shadow-[0_0_12px_rgba(167,139,250,0.5),0_0_24px_rgba(96,165,250,0.3)]" },
+  { min: 30, title: "Beacon", ring: "ring-blue-400", glow: "shadow-[0_0_10px_rgba(96,165,250,0.45)]" },
+  { min: 15, title: "Flame", ring: "ring-emerald-400", glow: "shadow-[0_0_8px_rgba(52,211,153,0.4)]" },
+  { min: 5, title: "Spark", ring: "ring-emerald-400/60", glow: "shadow-[0_0_6px_rgba(52,211,153,0.25)]" },
+  { min: 0, title: "Newcomer", ring: "", glow: "" },
+] as const;
+
+export function getKarmaTier(score: number) {
+  return KARMA_TIERS.find((t) => score >= t.min) || KARMA_TIERS[KARMA_TIERS.length - 1];
+}
+
+// Impact badge labels per category
+export const IMPACT_BADGES: Record<string, { singular: string; plural: string }> = {
+  ENVIRONMENT: { singular: "cleanup", plural: "cleanups" },
+  HELPING_NEIGHBORS: { singular: "neighbor helped", plural: "neighbors helped" },
+  ANIMAL_WELFARE: { singular: "animal rescue", plural: "animal rescues" },
+  VOLUNTEERING: { singular: "volunteer shift", plural: "volunteer shifts" },
+  MENTORING: { singular: "person mentored", plural: "people mentored" },
+  RANDOM_KINDNESS: { singular: "act of kindness", plural: "acts of kindness" },
+};
+
 export const SUPPORTED_LANGUAGES = {
   en: "English",
   de: "Deutsch",

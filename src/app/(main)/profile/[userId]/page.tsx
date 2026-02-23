@@ -23,6 +23,8 @@ export default async function ProfilePage({
       email: true,
       image: true,
       bio: true,
+      currentStreak: true,
+      longestStreak: true,
       createdAt: true,
       _count: { select: { deeds: true } },
     },
@@ -34,7 +36,20 @@ export default async function ProfilePage({
     where: { deed: { authorId: userId } },
   });
 
-  const profile: UserProfile = {
+  // Get deed counts by category for impact badges
+  const deedsByCategory = await prisma.deed.groupBy({
+    by: ["category"],
+    where: { authorId: userId },
+    _count: true,
+  });
+  const categoryCounts: Record<string, number> = {};
+  deedsByCategory.forEach((d) => {
+    categoryCounts[d.category] = d._count;
+  });
+
+  const isOwnProfile = session?.user?.id === userId;
+
+  const profile = {
     id: user.id,
     name: user.name,
     email: user.email,
@@ -43,6 +58,9 @@ export default async function ProfilePage({
     createdAt: user.createdAt.toISOString(),
     karmaScore,
     deedCount: user._count.deeds,
+    currentStreak: user.currentStreak,
+    longestStreak: user.longestStreak,
+    categoryCounts,
   };
 
   const deeds = await prisma.deed.findMany({
@@ -92,7 +110,7 @@ export default async function ProfilePage({
 
   return (
     <div className="space-y-6">
-      <ProfileHeader user={profile} />
+      <ProfileHeader user={profile} isOwnProfile={isOwnProfile} />
       <div>
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           {user.name}&apos;s Good Deeds

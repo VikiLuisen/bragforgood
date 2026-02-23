@@ -120,6 +120,47 @@ export async function POST(request: Request) {
       },
     });
 
+    // Update posting streak
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { lastDeedDate: true, currentStreak: true, longestStreak: true },
+      });
+
+      if (user) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let newStreak = user.currentStreak;
+
+        if (user.lastDeedDate) {
+          const lastDate = new Date(user.lastDeedDate);
+          lastDate.setHours(0, 0, 0, 0);
+          const diffDays = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 1) {
+            newStreak = user.currentStreak + 1;
+          } else if (diffDays > 1) {
+            newStreak = 1;
+          }
+          // diffDays === 0: already posted today, keep current streak
+        } else {
+          newStreak = 1;
+        }
+
+        await prisma.user.update({
+          where: { id: session.user.id },
+          data: {
+            currentStreak: newStreak,
+            longestStreak: Math.max(newStreak, user.longestStreak),
+            lastDeedDate: today,
+          },
+        });
+      }
+    } catch (e) {
+      console.error("Streak update error:", e);
+    }
+
     return NextResponse.json(deed, { status: 201 });
   } catch {
     return NextResponse.json(
