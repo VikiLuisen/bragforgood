@@ -26,7 +26,7 @@ export default function TermsPage() {
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">2. What bragforgood is</h2>
           <p>
             bragforgood is a social platform where users share good deeds and positive actions. The platform is
-            operated by Viktoria Luisen and is provided as-is, free of charge.
+            operated by Claudia Hilti and is provided as-is, free of charge.
           </p>
         </section>
 
@@ -80,7 +80,15 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">8. Changes to these terms</h2>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">8. Governing law</h2>
+          <p>
+            These terms are governed by the laws of Switzerland. Users from other countries are additionally subject
+            to their local consumer protection laws where applicable.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">9. Changes to these terms</h2>
           <p>
             We may update these terms from time to time. Continued use of the platform after changes constitutes
             acceptance of the updated terms.
@@ -88,7 +96,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">9. Contact</h2>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">10. Contact</h2>
           <p>
             For questions about these terms, contact us at contact@bragforgood.com.
           </p>

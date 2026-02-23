@@ -36,8 +36,8 @@ export default function ContactPage() {
         <section>
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Data requests</h2>
           <p>
-            To request access to, correction, or deletion of your personal data under GDPR, email us at
-            contact@bragforgood.com. We will respond within 30 days.
+            To request access to, correction, or deletion of your personal data under GDPR, Swiss FADP, or other
+            applicable data protection laws, email us at contact@bragforgood.com. We will respond within 30 days.
           </p>
         </section>
 

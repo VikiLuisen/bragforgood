@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">1. Who we are</h2>
           <p>
-            bragforgood is operated by Viktoria Luisen. For questions about this privacy policy, contact us at
+            bragforgood is operated by Claudia Hilti. For questions about this privacy policy, contact us at
             contact@bragforgood.com.
           </p>
         </section>
@@ -65,15 +65,20 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">6. Your rights (GDPR)</h2>
-          <p>As a user in the EU, you have the right to:</p>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">6. Your rights</h2>
+          <p>Depending on your location, you may have the following rights regarding your personal data:</p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
             <li>Access the personal data we hold about you</li>
             <li>Request correction of inaccurate data</li>
             <li>Request deletion of your data</li>
             <li>Object to processing of your data</li>
             <li>Request data portability</li>
+            <li>Withdraw consent at any time</li>
           </ul>
+          <p className="mt-2">
+            These rights apply under the EU General Data Protection Regulation (GDPR), the Swiss Federal Act on Data
+            Protection (FADP/DSG), and other applicable data protection laws worldwide.
+          </p>
           <p className="mt-2">
             To exercise any of these rights, contact us at contact@bragforgood.com.
           </p>

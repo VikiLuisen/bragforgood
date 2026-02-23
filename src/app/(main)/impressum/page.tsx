@@ -10,44 +10,51 @@ export default function ImpressumPage() {
         Back
       </Link>
 
-      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-8">Impressum</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-8">Impressum / Legal Notice</h1>
 
       <div className="card p-6 space-y-6 text-sm text-[var(--text-secondary)] leading-relaxed">
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Angaben gem. § 5 TMG</h2>
-          <p>Viktoria Luisen</p>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Information pursuant to § 5 TMG (Germany) / Art. 3 UWG (Switzerland)</h2>
+          <p>Claudia Hilti</p>
+          <p className="mt-1">E-Mail: contact@bragforgood.com</p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Kontakt</h2>
-          <p>E-Mail: contact@bragforgood.com</p>
-        </section>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Disclaimer of liability</h2>
 
-        <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Haftungsausschluss</h2>
-          <h3 className="font-semibold text-[var(--text-primary)] mt-3 mb-1">Haftung für Inhalte</h3>
+          <h3 className="font-semibold text-[var(--text-primary)] mt-3 mb-1">Content</h3>
           <p>
-            Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
-            Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7
-            Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis
-            10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
-            Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+            The contents of this website have been created with the utmost care. However, we cannot guarantee the
+            accuracy, completeness, or timeliness of the content. As a service provider, we are responsible for our own
+            content on these pages in accordance with applicable national and international laws. However, we are not
+            obligated to monitor transmitted or stored third-party information or to investigate circumstances that
+            indicate illegal activity.
           </p>
 
-          <h3 className="font-semibold text-[var(--text-primary)] mt-3 mb-1">Haftung für Links</h3>
+          <h3 className="font-semibold text-[var(--text-primary)] mt-3 mb-1">External links</h3>
           <p>
-            Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben.
-            Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten
-            Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+            Our website may contain links to external websites of third parties, over whose content we have no
+            influence. Therefore, we cannot accept any liability for this third-party content. The respective provider
+            or operator of the linked pages is always responsible for the content of those pages.
           </p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Urheberrecht</h2>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Copyright</h2>
           <p>
-            Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen
-            Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der
-            Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+            The content and works created by the site operator on these pages are subject to copyright law. Duplication,
+            processing, distribution, or any form of commercialization of such material beyond the scope of copyright
+            law requires the prior written consent of the respective author or creator. This applies under the laws of
+            Germany, Switzerland, the European Union, and all applicable international copyright conventions (including
+            the Berne Convention and WIPO treaties).
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mb-2">Governing law</h2>
+          <p>
+            This legal notice complies with German law (Telemediengesetz, TMG) and Swiss law (Bundesgesetz gegen den
+            unlauteren Wettbewerb, UWG). For users outside of these jurisdictions, all applicable local laws also apply.
           </p>
         </section>
       </div>
