@@ -51,7 +51,9 @@
       "Bash(export PATH=\"$HOME/.local/node/bin:$PATH\" && npx prisma db seed 2>&1)",
       "Bash(export PATH=\"$HOME/.local/node/bin:$PATH\" && npm install @neondatabase/serverless @prisma/adapter-neon 2>&1)",
       "Bash(export PATH=\"$HOME/.local/node/bin:$PATH\" && npm uninstall @prisma/adapter-better-sqlite3 better-sqlite3 @types/better-sqlite3 2>&1)",
-      "Bash(export PATH=\"$HOME/.local/node/bin:$PATH\" && npm run seed 2>&1)"
+      "Bash(export PATH=\"$HOME/.local/node/bin:$PATH\" && npm run seed 2>&1)",
+      "Bash(git remote set-url origin https://github.com/VikiLuisen/bragforgood_.git && git remote -v 2>&1)",
+      "Bash(git push:*)"
     ]
   }
 }

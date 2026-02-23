@@ -7,8 +7,9 @@
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="8" fill="#0f1117"/>
-  <path d="M14 24V18M18 24V18M11 18V12C11 11 11.5 10 13 10C14.5 10 15 11 15 12V8C15 7 15.5 6 17 6C18.5 6 19 7 19 8V12C19 11 19.5 10 21 10C22.5 10 23 11 23 12V18C23 22 20 24 17 24H15C12 24 11 22 11 18Z" fill="url(#g)" opacity="0.9"/>
-  <path d="M8 8L9 6L10 8L9 10Z" fill="url(#g)" opacity="0.6"/>
-  <path d="M24 6L25 4L26 6L25 8Z" fill="url(#g)" opacity="0.5"/>
-  <path d="M6 14L7 12L8 14L7 16Z" fill="url(#g)" opacity="0.4"/>
+  <path d="M5 22L8 10L13 16L16 6L19 16L24 10L27 22H5Z" fill="url(#g)" opacity="0.9"/>
+  <rect x="5" y="22" width="22" height="4" rx="1.5" fill="url(#g)" opacity="0.7"/>
+  <circle cx="10" cy="19" r="1.5" fill="#0f1117" opacity="0.5"/>
+  <circle cx="16" cy="17" r="1.5" fill="#0f1117" opacity="0.5"/>
+  <circle cx="22" cy="19" r="1.5" fill="#0f1117" opacity="0.5"/>
 </svg>

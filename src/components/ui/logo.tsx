@@ -24,7 +24,7 @@ export function Logo({ href = "/feed", size = "md", className }: LogoProps) {
 
   const content = (
     <span className={cn("inline-flex items-center font-bold tracking-tight", sizes[size], className)}>
-      <BragIcon className={iconSizes[size]} />
+      <CrownIcon className={iconSizes[size]} />
       <span>
         brag<span className="text-gradient">forgood</span>
       </span>
@@ -42,7 +42,7 @@ export function Logo({ href = "/feed", size = "md", className }: LogoProps) {
   return content;
 }
 
-function BragIcon({ className }: { className?: string }) {
+function CrownIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"
@@ -64,34 +64,28 @@ function BragIcon({ className }: { className?: string }) {
           </feMerge>
         </filter>
       </defs>
-      {/* Raised fist */}
+      {/* Crown body */}
       <path
-        d="M14 24V18M18 24V18M11 18V12C11 11 11.5 10 13 10C14.5 10 15 11 15 12V8C15 7 15.5 6 17 6C18.5 6 19 7 19 8V12C19 11 19.5 10 21 10C22.5 10 23 11 23 12V18C23 22 20 24 17 24H15C12 24 11 22 11 18Z"
+        d="M5 22L8 10L13 16L16 6L19 16L24 10L27 22H5Z"
         fill="url(#bragGrad)"
         opacity="0.9"
         filter="url(#bragGlow)"
       />
-      {/* Sparkle top-left */}
-      <path
-        d="M8 8L9 6L10 8L9 10Z"
+      {/* Crown base band */}
+      <rect
+        x="5"
+        y="22"
+        width="22"
+        height="4"
+        rx="1.5"
         fill="url(#bragGrad)"
-        opacity="0.6"
+        opacity="0.7"
         filter="url(#bragGlow)"
       />
-      {/* Sparkle top-right */}
-      <path
-        d="M24 6L25 4L26 6L25 8Z"
-        fill="url(#bragGrad)"
-        opacity="0.5"
-        filter="url(#bragGlow)"
-      />
-      {/* Sparkle left */}
-      <path
-        d="M6 14L7 12L8 14L7 16Z"
-        fill="url(#bragGrad)"
-        opacity="0.4"
-        filter="url(#bragGlow)"
-      />
+      {/* Crown jewels */}
+      <circle cx="10" cy="19" r="1.5" fill="#0f1117" opacity="0.5" />
+      <circle cx="16" cy="17" r="1.5" fill="#0f1117" opacity="0.5" />
+      <circle cx="22" cy="19" r="1.5" fill="#0f1117" opacity="0.5" />
     </svg>
   );
 }
