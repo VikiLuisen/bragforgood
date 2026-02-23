@@ -9,7 +9,9 @@ export const signUpSchema = z
   .object({
     name: z.string().transform(stripHtml).pipe(z.string().min(2, "Name must be at least 2 characters").max(50)),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters")
+      .refine((pw) => /[A-Z]/.test(pw), "Password must include an uppercase letter")
+      .refine((pw) => /[0-9]/.test(pw), "Password must include a number"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -29,7 +31,9 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z
   .object({
     token: z.string().min(1, "Token is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters")
+      .refine((pw) => /[A-Z]/.test(pw), "Password must include an uppercase letter")
+      .refine((pw) => /[0-9]/.test(pw), "Password must include a number"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -40,7 +44,10 @@ export const resetPasswordSchema = z
 export const updateProfileSchema = z.object({
   name: z.string().transform(stripHtml).pipe(z.string().min(2, "Name must be at least 2 characters").max(50, "Name must be at most 50 characters")),
   bio: z.string().transform(stripHtml).pipe(z.string().max(200, "Bio must be at most 200 characters")).optional().or(z.literal("")),
-  image: z.string().url().nullable().optional(),
+  image: z.string().url().refine((url) => {
+    try { return ["https:", "http:"].includes(new URL(url).protocol); }
+    catch { return false; }
+  }, "Only HTTP/HTTPS URLs allowed").nullable().optional(),
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;

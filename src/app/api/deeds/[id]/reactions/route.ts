@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(
   request: Request,
@@ -13,6 +14,10 @@ export async function POST(
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!rateLimit(`reaction:${session.user.id}`, 60, 3600000)) {
+    return NextResponse.json({ error: "Too many reactions. Slow down!" }, { status: 429 });
   }
 
   const body = await request.json();

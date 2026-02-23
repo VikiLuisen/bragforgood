@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 export const authConfig: NextAuthConfig = {
   pages: {
@@ -23,6 +24,7 @@ export const authConfig: NextAuthConfig = {
         token.id = user.id;
         token.name = user.name;
         token.image = user.image;
+        token.isAdmin = user.email === ADMIN_EMAIL;
       }
       // When session.update({ name, image }) is called from client
       if (trigger === "update" && updateData) {
@@ -36,6 +38,7 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.image = (token.image as string | null) ?? undefined;
+        (session.user as unknown as Record<string, unknown>).isAdmin = token.isAdmin as boolean;
       }
       return session;
     },

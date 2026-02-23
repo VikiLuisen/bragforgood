@@ -19,7 +19,10 @@ export const createDeedSchema = z.object({
   category: z.enum(categoryKeys, {
     message: "Please select a category",
   }),
-  photoUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+  photoUrl: z.string().url("Invalid URL").refine((url) => {
+    try { return ["https:", "http:"].includes(new URL(url).protocol); }
+    catch { return false; }
+  }, "Only HTTP/HTTPS URLs allowed").optional().or(z.literal("")),
   location: z.string().max(100).optional().or(z.literal("")),
 });
 
