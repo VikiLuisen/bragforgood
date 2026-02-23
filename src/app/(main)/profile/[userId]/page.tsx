@@ -1,0 +1,107 @@
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { ProfileHeader } from "@/components/profile/profile-header";
+import { DeedFeed } from "@/components/deeds/deed-feed";
+import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
+import type { ReactionType } from "@/lib/constants";
+import type { UserProfile } from "@/types";
+
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
+  const { userId } = await params;
+  const session = await auth();
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      bio: true,
+      createdAt: true,
+      _count: { select: { deeds: true } },
+    },
+  });
+
+  if (!user) notFound();
+
+  const karmaScore = await prisma.reaction.count({
+    where: { deed: { authorId: userId } },
+  });
+
+  const profile: UserProfile = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    image: user.image,
+    bio: user.bio,
+    createdAt: user.createdAt.toISOString(),
+    karmaScore,
+    deedCount: user._count.deeds,
+  };
+
+  const deeds = await prisma.deed.findMany({
+    where: { authorId: userId },
+    take: PAGE_SIZE + 1,
+    orderBy: { createdAt: "desc" },
+    include: {
+      author: { select: { id: true, name: true, image: true } },
+      _count: { select: { comments: true } },
+      reactions: true,
+    },
+  });
+
+  const hasMore = deeds.length > PAGE_SIZE;
+  const items = hasMore ? deeds.slice(0, PAGE_SIZE) : deeds;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
+
+  const reactionTypes = Object.keys(REACTION_CONFIG) as ReactionType[];
+
+  const formattedDeeds = items.map((deed) => {
+    const reactionCounts: Record<string, number> = {};
+    reactionTypes.forEach((type) => {
+      reactionCounts[type] = deed.reactions.filter((r) => r.type === type).length;
+    });
+
+    const userReactions = session?.user?.id
+      ? deed.reactions
+          .filter((r) => r.userId === session.user!.id)
+          .map((r) => r.type)
+      : [];
+
+    return {
+      id: deed.id,
+      title: deed.title,
+      description: deed.description,
+      category: deed.category,
+      photoUrl: deed.photoUrl,
+      location: deed.location,
+      isExample: deed.isExample,
+      createdAt: deed.createdAt.toISOString(),
+      author: deed.author,
+      _count: deed._count,
+      reactionCounts,
+      userReactions,
+    };
+  });
+
+  return (
+    <div className="space-y-6">
+      <ProfileHeader user={profile} />
+      <div>
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          {user.name}&apos;s Good Deeds
+        </h2>
+        <DeedFeed
+          initialDeeds={formattedDeeds as never[]}
+          initialCursor={nextCursor}
+        />
+      </div>
+    </div>
+  );
+}

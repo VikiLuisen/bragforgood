@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  hashedPassword String
+  image          String?
+  bio            String?
+  preferredLang  String   @default("en")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  deeds     Deed[]
+  reactions Reaction[]
+  comments  Comment[]
+  reports   Report[]
+
+  @@map("users")
+}
+
+model Deed {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   // ENVIRONMENT, HELPING_NEIGHBORS, ANIMAL_WELFARE, VOLUNTEERING, MENTORING, RANDOM_KINDNESS
+  photoUrl    String?
+  location    String?
+  isExample   Boolean  @default(false)
+  flagCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  reactions Reaction[]
+  comments  Comment[]
+  reports   Report[]
+
+  @@index([authorId])
+  @@index([createdAt(sort: Desc)])
+  @@index([category])
+  @@map("deeds")
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  type      String   // INSPIRED, THANK_YOU, AMAZING, KEEP_GOING
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deedId String
+  deed   Deed   @relation(fields: [deedId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deedId, type])
+  @@index([deedId])
+  @@map("reactions")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deedId String
+  deed   Deed   @relation(fields: [deedId], references: [id], onDelete: Cascade)
+
+  @@index([deedId, createdAt(sort: Desc)])
+  @@map("comments")
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  reason    String   // not_good_deed, spam, offensive, other
+  details   String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deedId String
+  deed   Deed   @relation(fields: [deedId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deedId])
+  @@index([deedId])
+  @@map("reports")
+}
