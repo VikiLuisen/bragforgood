@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,7 @@ interface ProfileEditFormProps {
 
 export function ProfileEditForm({ user, onCancel }: ProfileEditFormProps) {
   const router = useRouter();
+  const { update: updateSession } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(user.name);
   const [bio, setBio] = useState(user.bio || "");
@@ -122,6 +123,8 @@ export function ProfileEditForm({ user, onCancel }: ProfileEditFormProps) {
       return;
     }
 
+    // Refresh the session so navbar avatar/name updates
+    await updateSession();
     onCancel();
     router.refresh();
   }
