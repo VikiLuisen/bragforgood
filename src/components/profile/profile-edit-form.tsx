@@ -124,7 +124,7 @@ export function ProfileEditForm({ user, onCancel }: ProfileEditFormProps) {
     }
 
     // Refresh the session so navbar avatar/name updates
-    await updateSession();
+    await updateSession({ name, image: finalImageUrl });
     onCancel();
     router.refresh();
   }
