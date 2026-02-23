@@ -10,7 +10,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`;
 
   await getResend().emails.send({
-    from: "bragforgood <noreply@bragforgood.com>",
+    from: "bragforgood <onboarding@resend.dev>",
     to: email,
     subject: "Reset your password — bragforgood",
     html: `
