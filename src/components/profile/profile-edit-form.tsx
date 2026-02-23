@@ -41,8 +41,8 @@ export function ProfileEditForm({ user, onCancel }: ProfileEditFormProps) {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, image: "Image must be less than 5MB" }));
+    if (file.size > 4 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, image: "Image must be less than 4MB" }));
       return;
     }
 

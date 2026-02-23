@@ -3,7 +3,7 @@ import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 4 * 1024 * 1024; // 4MB (Vercel serverless limit is 4.5MB)
 
 export async function POST(request: Request) {
   try {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "Image must be less than 5MB" },
+        { error: "Image must be less than 4MB" },
         { status: 400 }
       );
     }

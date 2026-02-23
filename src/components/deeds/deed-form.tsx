@@ -36,8 +36,8 @@ export function DeedForm() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, photo: "Image must be less than 5MB" }));
+    if (file.size > 4 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, photo: "Image must be less than 4MB" }));
       return;
     }
 
@@ -247,7 +247,7 @@ export function DeedForm() {
                   Tap to add a photo
                 </p>
                 <p className="text-[10px] text-[var(--text-tertiary)] mt-1">
-                  JPEG, PNG, WebP, or GIF up to 5MB
+                  JPEG, PNG, WebP, or GIF up to 4MB
                 </p>
               </button>
             )}
