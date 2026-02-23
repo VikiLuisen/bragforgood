@@ -7,12 +7,15 @@ import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");
   const category = searchParams.get("category");
   const limit = Math.min(Number(searchParams.get("limit")) || PAGE_SIZE, 50);
-
-  const session = await auth();
 
   const where = {
     ...(category ? { category } : {}),

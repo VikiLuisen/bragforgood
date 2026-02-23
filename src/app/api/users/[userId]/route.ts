@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { userId } = await params;
 
   const user = await prisma.user.findUnique({
@@ -12,7 +18,6 @@ export async function GET(
     select: {
       id: true,
       name: true,
-      email: true,
       image: true,
       bio: true,
       createdAt: true,
@@ -31,7 +36,6 @@ export async function GET(
   return NextResponse.json({
     id: user.id,
     name: user.name,
-    email: user.email,
     image: user.image,
     bio: user.bio,
     createdAt: user.createdAt.toISOString(),

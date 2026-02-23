@@ -1,8 +1,13 @@
 import { z } from "zod";
 
+// Strip HTML tags to prevent XSS
+function stripHtml(str: string): string {
+  return str.replace(/<[^>]*>/g, "").trim();
+}
+
 export const signUpSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters").max(50),
+    name: z.string().transform(stripHtml).pipe(z.string().min(2, "Name must be at least 2 characters").max(50)),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
@@ -33,8 +38,8 @@ export const resetPasswordSchema = z
   });
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name must be at most 50 characters"),
-  bio: z.string().max(200, "Bio must be at most 200 characters").optional().or(z.literal("")),
+  name: z.string().transform(stripHtml).pipe(z.string().min(2, "Name must be at least 2 characters").max(50, "Name must be at most 50 characters")),
+  bio: z.string().transform(stripHtml).pipe(z.string().max(200, "Bio must be at most 200 characters")).optional().or(z.literal("")),
   image: z.string().url().nullable().optional(),
 });
 

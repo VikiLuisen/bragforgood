@@ -8,11 +8,15 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { userId } = await params;
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");
   const limit = Math.min(Number(searchParams.get("limit")) || PAGE_SIZE, 50);
-  const session = await auth();
 
   const deeds = await prisma.deed.findMany({
     where: { authorId: userId },
