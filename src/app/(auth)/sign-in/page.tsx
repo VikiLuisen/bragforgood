@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const resetSuccess = searchParams.get("reset") === "success";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -47,6 +50,12 @@ export default function SignInPage() {
 
         <div className="card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {resetSuccess && (
+              <div className="bg-[var(--accent)]/10 text-[var(--accent)] text-sm p-3 rounded-xl text-center font-medium">
+                Password updated! Sign in with your new password.
+              </div>
+            )}
+
             {error && (
               <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-xl text-center font-medium">
                 {error}
@@ -73,6 +82,12 @@ export default function SignInPage() {
               required
             />
 
+            <div className="flex justify-end">
+              <Link href="/forgot-password" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors">
+                Forgot your password?
+              </Link>
+            </div>
+
             <Button type="submit" className="w-full" loading={loading}>
               Sign In
             </Button>
@@ -87,5 +102,13 @@ export default function SignInPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
   );
 }

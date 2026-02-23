@@ -23,7 +23,7 @@ export default async function HomePage() {
         <div className="text-center max-w-2xl animate-fade-in">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--accent-dim)] border border-[rgba(52,211,153,0.2)] text-[var(--accent)] text-xs font-semibold mb-10 tracking-wide">
             <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-            Humble? Overrated.
+            A new kind of social feed
           </div>
 
           <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-[var(--text-primary)] leading-[1.05]">

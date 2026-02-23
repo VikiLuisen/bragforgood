@@ -14,9 +14,11 @@ model User {
   hashedPassword String
   image          String?
   bio            String?
-  preferredLang  String   @default("en")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  preferredLang    String    @default("en")
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   deeds     Deed[]
   reactions Reaction[]
