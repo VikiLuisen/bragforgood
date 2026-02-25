@@ -9,6 +9,7 @@ import { PostActions } from "./post-actions";
 import { ShareButton } from "./share-button";
 import { JoinButton } from "./join-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
+import { StarDisplay } from "@/components/ratings/star-display";
 import { TranslateButton } from "@/components/ui/translate-button";
 import { InlineCommentSection } from "@/components/comments/inline-comment-section";
 import { formatDate, formatEventDate } from "@/lib/utils";
@@ -144,8 +145,14 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
             </div>
           )}
 
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
             <CategoryBadge category={deed.category} />
+            {isPast && deed.averageRating != null && deed.ratingCount != null && deed.ratingCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-[var(--text-tertiary)]">
+                <StarDisplay score={deed.averageRating} size="sm" />
+                <span>{deed.averageRating} ({deed.ratingCount})</span>
+              </span>
+            )}
             {!isCTA && deed.location && (
               <span className="inline-flex items-center gap-1 text-[11px] text-[var(--text-tertiary)]">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

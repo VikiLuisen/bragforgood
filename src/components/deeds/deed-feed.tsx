@@ -12,9 +12,11 @@ interface DeedFeedProps {
   initialDeeds: DeedWithAuthor[];
   initialCursor: string | null;
   sessionUserId?: string;
+  fetchUrl?: string;
+  showFilters?: boolean;
 }
 
-export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFeedProps) {
+export function DeedFeed({ initialDeeds, initialCursor, sessionUserId, fetchUrl = "/api/deeds", showFilters = true }: DeedFeedProps) {
   const [filter, setFilter] = useState<FeedFilter>("ALL");
   const [deeds, setDeeds] = useState(initialDeeds);
   const [cursor, setCursor] = useState(initialCursor);
@@ -26,7 +28,8 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFee
     setLoading(true);
 
     const typeParam = filter !== "ALL" ? `&type=${filter}` : "";
-    const res = await fetch(`/api/deeds?cursor=${cursor}${typeParam}`);
+    const sep = fetchUrl.includes("?") ? "&" : "?";
+    const res = await fetch(`${fetchUrl}${sep}cursor=${cursor}${typeParam}`);
     const data = await res.json();
 
     setDeeds((prev) => [...prev, ...data.items]);
@@ -47,7 +50,7 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFee
     setFilterLoading(true);
 
     const typeParam = newFilter !== "ALL" ? `?type=${newFilter}` : "";
-    const res = await fetch(`/api/deeds${typeParam}`);
+    const res = await fetch(`${fetchUrl}${typeParam}`);
     const data = await res.json();
 
     setDeeds(data.items);
@@ -64,7 +67,7 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFee
   return (
     <div>
       {/* Filter tabs */}
-      <div className="flex gap-1 mb-4 p-1 rounded-xl bg-[var(--bg-elevated)]">
+      {showFilters && <div className="flex gap-1 mb-4 p-1 rounded-xl bg-[var(--bg-elevated)]">
         {filters.map(({ key, label }) => (
           <div key={key} className="flex-1 flex items-center">
             <button
@@ -94,7 +97,7 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId }: DeedFee
             )}
           </div>
         ))}
-      </div>
+      </div>}
 
       {filterLoading ? (
         <div className="flex justify-center py-16">

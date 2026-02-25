@@ -12,6 +12,8 @@ import { JoinButton } from "@/components/deeds/join-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { CommentList } from "@/components/comments/comment-list";
 import { CommentForm } from "@/components/comments/comment-form";
+import { BackButton } from "@/components/ui/back-button";
+import { RatingList } from "@/components/ratings/rating-list";
 import { formatDate, formatEventDate } from "@/lib/utils";
 import { REACTION_CONFIG, PAGE_SIZE } from "@/lib/constants";
 import type { ReactionType, DeedCategory } from "@/lib/constants";
@@ -55,9 +57,13 @@ export default async function DeedDetailPage({
   const deed = await prisma.deed.findUnique({
     where: { id },
     include: {
-      author: { select: { id: true, name: true, image: true } },
+      author: { select: { id: true, name: true, image: true, email: true } },
       _count: { select: { comments: true, participants: true } },
       reactions: true,
+      ratings: {
+        orderBy: { createdAt: "desc" },
+        include: { user: { select: { id: true, name: true, image: true } } },
+      },
       comments: {
         take: PAGE_SIZE,
         orderBy: { createdAt: "desc" },
@@ -95,6 +101,21 @@ export default async function DeedDetailPage({
     ? deed.participants.some((p) => p.userId === session.user!.id)
     : false;
 
+  const isAuthor = deed.author.id === session?.user?.id;
+
+  // Ratings data for past CTAs
+  const formattedRatings = deed.ratings.map((r) => ({
+    id: r.id,
+    score: r.score,
+    comment: r.comment,
+    createdAt: r.createdAt.toISOString(),
+    user: r.user,
+  }));
+  const avgRating = formattedRatings.length > 0
+    ? Math.round((formattedRatings.reduce((sum, r) => sum + r.score, 0) / formattedRatings.length) * 10) / 10
+    : 0;
+  const canRate = isPast && isJoined && !deed.ratings.some((r) => r.userId === session?.user?.id);
+
   const formattedComments = deed.comments.map((c) => ({
     id: c.id,
     body: c.body,
@@ -105,12 +126,7 @@ export default async function DeedDetailPage({
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Back button */}
-      <Link href="/feed" className="inline-flex items-center gap-1.5 text-sm text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors font-medium">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to the board
-      </Link>
+      <BackButton />
 
       {/* Deed content */}
       <article className={`card p-6 ${isCTA ? "border-l-4 border-l-sky-500" : ""}`}>
@@ -279,6 +295,38 @@ export default async function DeedDetailPage({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Contact Organizer - visible to joined participants */}
+      {isCTA && isJoined && !isAuthor && deed.author.email && (
+        <div className="card p-4 flex items-center justify-between">
+          <span className="text-sm text-[var(--text-secondary)]">Need to reach the organizer?</span>
+          <a
+            href={`mailto:${deed.author.email}?subject=${encodeURIComponent(`About: ${deed.title}`)}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)] transition-all"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact Organizer
+          </a>
+        </div>
+      )}
+
+      {/* Ratings for past CTAs */}
+      {isCTA && isPast && (
+        <div className="card p-6">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
+            Ratings ({formattedRatings.length})
+          </h2>
+          <RatingList
+            deedId={deed.id}
+            initialRatings={formattedRatings}
+            initialAverage={avgRating}
+            initialCount={formattedRatings.length}
+            canRate={canRate}
+          />
         </div>
       )}
 

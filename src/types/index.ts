@@ -39,10 +39,13 @@ export interface DeedWithAuthor {
   participantCount: number;
   isJoined: boolean;
   createdAt: string;
+  averageRating?: number;
+  ratingCount?: number;
   author: {
     id: string;
     name: string;
     image: string | null;
+    email?: string;
     karmaScore?: number;
   };
   _count: {
@@ -50,6 +53,18 @@ export interface DeedWithAuthor {
   };
   reactionCounts: Record<ReactionType, number>;
   userReactions: ReactionType[];
+}
+
+export interface RatingWithUser {
+  id: string;
+  score: number;
+  comment: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
 }
 
 export interface CommentWithUser {

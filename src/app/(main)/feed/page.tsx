@@ -49,6 +49,26 @@ export default async function FeedPage() {
     }
   }
 
+  // Fetch average ratings for past CTAs
+  const pastCtaIds = items
+    .filter((d) => d.type === "CALL_TO_ACTION" && d.eventDate && d.eventDate < new Date())
+    .map((d) => d.id);
+  const ratingAggMap = new Map<string, { avg: number; count: number }>();
+  if (pastCtaIds.length > 0) {
+    const ratingAggs = await prisma.rating.groupBy({
+      by: ["deedId"],
+      where: { deedId: { in: pastCtaIds } },
+      _avg: { score: true },
+      _count: true,
+    });
+    ratingAggs.forEach((r) => {
+      ratingAggMap.set(r.deedId, {
+        avg: Math.round((r._avg.score || 0) * 10) / 10,
+        count: r._count,
+      });
+    });
+  }
+
   const formattedDeeds = items.map((deed) => {
     const reactionCounts: Record<string, number> = {};
     reactionTypes.forEach((type) => {
@@ -82,6 +102,8 @@ export default async function FeedPage() {
         ...deed.author,
         karmaScore: karmaMap[deed.author.id] || 0,
       },
+      averageRating: ratingAggMap.get(deed.id)?.avg,
+      ratingCount: ratingAggMap.get(deed.id)?.count,
       _count: deed._count,
       reactionCounts,
       userReactions,

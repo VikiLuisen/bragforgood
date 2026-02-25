@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { sendEventJoinConfirmation } from "@/lib/email";
 
 export async function GET(
   _request: NextRequest,
@@ -44,7 +45,7 @@ export async function POST(
 
   const deed = await prisma.deed.findUnique({
     where: { id },
-    select: { type: true, eventDate: true, maxSpots: true, authorId: true, _count: { select: { participants: true } } },
+    select: { type: true, title: true, eventDate: true, eventEndDate: true, meetingPoint: true, whatToBring: true, maxSpots: true, authorId: true, _count: { select: { participants: true } } },
   });
 
   if (!deed) {
@@ -98,6 +99,26 @@ export async function POST(
   });
 
   const count = await prisma.participant.count({ where: { deedId: id } });
+
+  // Send confirmation email (fire-and-forget)
+  if (deed.eventDate && deed.meetingPoint) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true, name: true },
+    });
+    if (user?.email) {
+      sendEventJoinConfirmation({
+        to: user.email,
+        userName: user.name,
+        eventTitle: deed.title,
+        eventDate: deed.eventDate,
+        eventEndDate: deed.eventEndDate,
+        meetingPoint: deed.meetingPoint,
+        whatToBring: deed.whatToBring,
+        deedId: id,
+      }).catch(() => {}); // Don't block the response
+    }
+  }
 
   return NextResponse.json({
     participant: {

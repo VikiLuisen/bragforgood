@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ProfileHeader } from "@/components/profile/profile-header";
-import { DeedFeed } from "@/components/deeds/deed-feed";
+import { ProfileTabs } from "@/components/profile/profile-tabs";
 import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
 import type { UserProfile } from "@/types";
@@ -133,18 +133,71 @@ export default async function ProfilePage({
     };
   });
 
+  // Fetch joined events
+  const participations = await prisma.participant.findMany({
+    where: { userId },
+    take: PAGE_SIZE + 1,
+    orderBy: { createdAt: "desc" },
+    include: {
+      deed: {
+        include: {
+          author: { select: { id: true, name: true, image: true, email: true } },
+          _count: { select: { participants: true } },
+        },
+      },
+    },
+  });
+
+  const hasMoreJoined = participations.length > PAGE_SIZE;
+  const joinedItems = hasMoreJoined ? participations.slice(0, PAGE_SIZE) : participations;
+  const joinedCursor = hasMoreJoined ? joinedItems[joinedItems.length - 1].id : null;
+
+  // Check which events the user has rated
+  const joinedDeedIds = joinedItems.map((p) => p.deed.id);
+  const userRatings = joinedDeedIds.length > 0 ? await prisma.rating.findMany({
+    where: { userId, deedId: { in: joinedDeedIds } },
+    select: { deedId: true, score: true },
+  }) : [];
+  const ratedMap = new Map(userRatings.map((r) => [r.deedId, r.score]));
+
+  const formattedJoined = joinedItems.map((p) => ({
+    participantId: p.id,
+    joinedAt: p.createdAt.toISOString(),
+    message: p.message,
+    hasRated: ratedMap.has(p.deed.id),
+    userRating: ratedMap.get(p.deed.id) || null,
+    deed: {
+      id: p.deed.id,
+      title: p.deed.title,
+      description: p.deed.description,
+      category: p.deed.category,
+      type: p.deed.type,
+      eventDate: p.deed.eventDate?.toISOString() || null,
+      eventEndDate: p.deed.eventEndDate?.toISOString() || null,
+      meetingPoint: p.deed.meetingPoint,
+      whatToBring: p.deed.whatToBring,
+      maxSpots: p.deed.maxSpots,
+      participantCount: p.deed._count.participants,
+      author: {
+        id: p.deed.author.id,
+        name: p.deed.author.name,
+        image: p.deed.author.image,
+        email: isOwnProfile ? p.deed.author.email : undefined,
+      },
+    },
+  }));
+
   return (
     <div className="space-y-6">
       <ProfileHeader user={profile} isOwnProfile={isOwnProfile} />
-      <div>
-        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-          {user.name}&apos;s Posts
-        </h2>
-        <DeedFeed
-          initialDeeds={formattedDeeds as never[]}
-          initialCursor={nextCursor}
-        />
-      </div>
+      <ProfileTabs
+        userId={userId}
+        initialDeeds={formattedDeeds as never[]}
+        initialDeedsCursor={nextCursor}
+        initialJoinedEvents={formattedJoined}
+        initialJoinedCursor={joinedCursor}
+        isOwnProfile={isOwnProfile}
+      />
     </div>
   );
 }
