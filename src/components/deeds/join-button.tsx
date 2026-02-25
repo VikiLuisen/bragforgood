@@ -156,7 +156,7 @@ export function JoinButton({
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              I&apos;m in!
+              I&apos;m signed up
             </>
           ) : isFull ? (
             "Full"
@@ -167,7 +167,7 @@ export function JoinButton({
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              I&apos;m in!
+              Sign up
             </>
           )}
         </button>
@@ -175,7 +175,7 @@ export function JoinButton({
           <svg className="w-3.5 h-3.5 inline mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          {spotsLabel} joined
+          {spotsLabel} signed up
         </span>
       </div>
 
@@ -190,7 +190,7 @@ export function JoinButton({
               onClick={handleExampleConfirm}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors"
             >
-              Join anyway
+              Sign me up so I can see how this works
             </button>
             <button
               onClick={handleExampleCancel}
@@ -200,6 +200,13 @@ export function JoinButton({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Post-signup hint */}
+      {isJoined && !showMessageInput && !showExampleWarning && (
+        <p className="mt-1.5 text-[11px] text-[var(--text-tertiary)]">
+          You can sign off or contact the organizer from your profile under Joined Events.
+        </p>
       )}
 
       {/* Message input + privacy toggle */}
@@ -220,7 +227,7 @@ export function JoinButton({
               onClick={handleJoinWithMessage}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors"
             >
-              Join
+              Sign up
             </button>
             <button
               onClick={handleCancelMessage}
