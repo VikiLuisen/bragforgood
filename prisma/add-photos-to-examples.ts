@@ -14,7 +14,7 @@ const photoMap: Record<string, string[]> = {
   "clothing swap party": ["https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=800&q=80", "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80"],
   "Built and hung 5 birdhouses": ["https://images.unsplash.com/photo-1520808663317-647b476a81b9?w=800&q=80"],
   "Lakeside cleanup at Mythenquai": ["https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=800&q=80"],
-  "Food bank needs volunteers": ["https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"],
+  "Food bank needs volunteers": ["https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800&q=80"],
   "Paid for the next 5 people": ["https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80"],
   "Read stories to kids": ["https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80"],
 };

@@ -52,7 +52,7 @@ async function main() {
       meetingPoint: "Tafel Zurich, Rautistrasse 33",
       whatToBring: "Comfortable shoes, a good mood. Lunch is provided!",
       maxSpots: 20,
-      photoUrls: ["https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"],
+      photoUrls: ["https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800&q=80"],
       isExample: true,
       authorId: sam.id,
       createdAt: new Date(now - 5 * hour),
