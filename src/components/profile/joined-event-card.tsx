@@ -76,7 +76,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
         </Link>
         <div className="flex items-center gap-1.5 shrink-0">
           {event.deed.isExample && (
-            <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--accent-dim)] text-[var(--accent)] border border-[rgba(52,211,153,0.15)]">
+            <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/25">
               Example
             </span>
           )}
