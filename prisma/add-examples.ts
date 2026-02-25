@@ -121,7 +121,7 @@ async function main() {
     data: {
       title: "Organized a neighborhood tool-sharing library",
       description:
-        "Nobody needs to own a drill they use twice a year. Set up a shared tool cabinet in our building's basement. 12 households chipped in tools — now everyone has access to everything from hammers to sewing machines. Community > consumerism.",
+        "Nobody needs to own a drill they use twice a year. Set up a shared tool cabinet in our building's basement. 12 households chipped in tools and now everyone has access to everything from hammers to sewing machines.",
       category: "HELPING_NEIGHBORS",
       location: "Kreis 4, Zurich",
       isExample: true,
@@ -176,9 +176,9 @@ async function main() {
   // Deed 9 - Maya - ENVIRONMENT
   newDeeds.push(await prisma.deed.create({
     data: {
-      title: "Organized a clothing swap party — zero waste, full wardrobes",
+      title: "Organized a clothing swap party, zero waste, full wardrobes",
       description:
-        "Invited 20 friends to bring clothes they don't wear anymore. Everyone left with 'new' outfits and we donated the leftovers to a refugee center. Fashion doesn't have to mean buying new. One woman's trash is another's treasure.",
+        "Invited 20 friends to bring clothes they don't wear anymore. Everyone left with 'new' outfits and we donated the leftovers to a refugee center. Why buy new when you can swap?",
       category: "ENVIRONMENT",
       location: "Zurich",
       photoUrls: ["https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=800&q=80", "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80"],
@@ -193,7 +193,7 @@ async function main() {
     data: {
       title: "Taught my 78-year-old neighbor how to video call her grandkids",
       description:
-        "Mrs. Keller's grandkids live in Canada and she'd never done a video call. Spent an hour setting up WhatsApp on her tablet and teaching her how to use it. She called them right away and started crying happy tears. Technology is beautiful when it connects people.",
+        "Mrs. Keller's grandkids live in Canada and she'd never done a video call. Spent an hour setting up WhatsApp on her tablet and showing her how it works. She called them right away and started crying happy tears. I almost lost it too.",
       category: "HELPING_NEIGHBORS",
       location: "Oerlikon, Zurich",
       isExample: true,
@@ -207,7 +207,7 @@ async function main() {
     data: {
       title: "Helped a teenager write their first job application",
       description:
-        "My neighbor's son was stressed about applying for an apprenticeship. Sat down with him for 2 hours — helped with his CV, practiced the interview, and boosted his confidence. He got the callback. Next week: mock interview round 2!",
+        "My neighbor's son was stressed about applying for an apprenticeship. Sat down with him for 2 hours, helped with his CV and practiced the interview. He got the callback! Next week we're doing a mock interview round 2.",
       category: "MENTORING",
       location: "Zurich",
       isExample: true,

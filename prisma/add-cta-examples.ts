@@ -22,7 +22,7 @@ async function main() {
   // CTA 1 - Maya - ENVIRONMENT - Beach cleanup this Saturday
   const cta1 = await prisma.deed.create({
     data: {
-      title: "Beach cleanup at Mythenquai — let's make it shine!",
+      title: "Lakeside cleanup at Mythenquai, let's make it shine!",
       description:
         "The lakeside is full of trash after the warm weekend. I'm organizing a group cleanup this Saturday morning. Last time we were 8 people and filled 12 bags in 2 hours. Let's beat that record! All ages welcome, bring your friends. I'll have extra gloves and bags.",
       category: "ENVIRONMENT",
@@ -42,9 +42,9 @@ async function main() {
   // CTA 2 - Sam - VOLUNTEERING - Weekend food drive
   const cta2 = await prisma.deed.create({
     data: {
-      title: "Food bank needs volunteers this Sunday — who's in?",
+      title: "Food bank needs volunteers this Sunday, who's in?",
       description:
-        "Tafel Zurich just got a huge donation and needs help sorting and packing. We're talking canned goods, fresh produce, and hygiene products for 300+ families. It's real, hands-on work and it feels amazing. No experience needed — just show up and we'll get it done together.",
+        "Tafel Zurich just got a huge donation and needs help sorting and packing. We're talking canned goods, fresh produce, and hygiene products for 300+ families. No experience needed, just show up and we'll get it done together.",
       category: "VOLUNTEERING",
       type: "CALL_TO_ACTION",
       eventDate: new Date(now + 6 * day),

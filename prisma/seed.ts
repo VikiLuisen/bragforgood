@@ -120,7 +120,7 @@ async function main() {
     data: {
       title: "Fostered 2 kittens until they found forever homes",
       description:
-        "The animal shelter was overwhelmed so I took in two 8-week-old kittens. Three weeks of bottle feeding, litter training, and endless cuddles later — both found amazing families. Foster parenting pets is the most rewarding thing I do.",
+        "The animal shelter was overwhelmed so I took in two 8-week-old kittens. Three weeks of bottle feeding, litter training, and endless cuddles later, both found amazing families. Honestly foster parenting pets is the best thing I do.",
       category: "ANIMAL_WELFARE",
       location: "Zurich Animal Shelter",
       photoUrls: [ "https://images.unsplash.com/photo-1559235038-1b0fadf76f78?w=800&q=80"],
@@ -148,7 +148,7 @@ async function main() {
     data: {
       title: "Picked up litter during my entire 15km trail run",
       description:
-        "Combined my morning run with a cleanup — it's called plogging! Carried a bag the entire route through Uetliberg. Filled it completely. Running is better when it has a purpose beyond fitness.",
+        "Combined my morning run with a cleanup, it's called plogging! Carried a bag the entire route through Uetliberg. Filled it completely. Running just hits different when you're also cleaning up.",
       category: "ENVIRONMENT",
       location: "Uetliberg Trail, Zurich",
       photoUrls: [ "https://images.unsplash.com/photo-1702449414685-1ed9316b7253?w=800&q=80"],
@@ -189,7 +189,7 @@ async function main() {
     data: {
       title: "Planted 20 native wildflower seedlings in the community garden",
       description:
-        "Our community garden had an empty plot so I filled it with native Swiss wildflowers — cornflowers, poppies, and chamomile. They'll bloom in spring and support local pollinators. Can't wait to see the bees.",
+        "Our community garden had an empty plot so I filled it with native Swiss wildflowers. Cornflowers, poppies, chamomile. They'll bloom in spring and the bees are going to love it.",
       category: "ENVIRONMENT",
       location: "Community Garden, Seefeld",
       photoUrls: [ "https://images.unsplash.com/photo-1759422261399-3370e715b70f?w=800&q=80"],
@@ -203,7 +203,7 @@ async function main() {
     data: {
       title: "Tutored a high school student in math for free for 3 months",
       description:
-        "My neighbor's daughter was struggling with calculus and her family couldn't afford a tutor. We met every Saturday morning for 3 months. She just got her results back — she passed with flying colors! Proudest moment.",
+        "My neighbor's daughter was struggling with calculus and her family couldn't afford a tutor. We met every Saturday morning for 3 months. She just got her results back and she passed! So proud of her.",
       category: "MENTORING",
       location: "Zurich",
       isExample: true,
