@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/lib/language-context";
 import { useTranslation } from "@/lib/useTranslation";
-import { SUPPORTED_LANGUAGES } from "@/lib/constants";
-import type { LanguageCode } from "@/lib/constants";
+import { SUPPORTED_LANGUAGES, UI_LANGUAGES } from "@/lib/constants";
+import type { LanguageCode, UILanguageCode } from "@/lib/constants";
 
 export function LanguageSelector() {
   const { lang, setLang, autoTranslate, setAutoTranslate } = useLanguage();
@@ -22,7 +22,7 @@ export function LanguageSelector() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const languages = Object.entries(SUPPORTED_LANGUAGES) as [LanguageCode, string][];
+  const uiLanguages = Object.entries(UI_LANGUAGES) as [UILanguageCode, string][];
 
   return (
     <div className="relative" ref={menuRef}>
@@ -56,7 +56,7 @@ export function LanguageSelector() {
             <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
               {t("langSelector.language")}
             </div>
-            {languages.map(([code, name]) => (
+            {uiLanguages.map(([code, name]) => (
               <button
                 key={code}
                 onClick={() => {

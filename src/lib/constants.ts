@@ -71,4 +71,15 @@ export const SUPPORTED_LANGUAGES = {
 
 export type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
 
+// Languages with full UI translation files (subset of SUPPORTED_LANGUAGES)
+export const UI_LANGUAGES = {
+  en: "English",
+  de: "Deutsch",
+  fr: "Français",
+  es: "Español",
+  it: "Italiano",
+} as const;
+
+export type UILanguageCode = keyof typeof UI_LANGUAGES;
+
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "";
