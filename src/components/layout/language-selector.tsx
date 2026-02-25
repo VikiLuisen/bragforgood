@@ -39,19 +39,6 @@ export function LanguageSelector() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-56 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-2xl shadow-black/40 py-1 z-50 animate-fade-in max-h-80 overflow-y-auto">
-          {/* Auto-translate toggle */}
-          <div className="px-4 py-2.5 border-b border-[var(--border)]">
-            <button
-              onClick={() => setAutoTranslate(!autoTranslate)}
-              className="flex items-center justify-between w-full text-[12px] font-medium"
-            >
-              <span className="text-[var(--text-secondary)]">{t("langSelector.autoTranslate")}</span>
-              <div className={`w-8 h-4.5 rounded-full transition-colors relative ${autoTranslate ? "bg-[var(--accent)]" : "bg-[var(--border-light)]"}`}>
-                <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-transform ${autoTranslate ? "translate-x-4" : "translate-x-0.5"}`} />
-              </div>
-            </button>
-          </div>
-
           <div className="py-1">
             <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
               {t("langSelector.language")}
