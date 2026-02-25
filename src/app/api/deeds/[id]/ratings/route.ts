@@ -48,7 +48,7 @@ export async function POST(
   const { id } = await params;
   const body = await request.json();
   const score = body.score;
-  const comment = typeof body.comment === "string" ? body.comment.trim().slice(0, 500) || null : null;
+  const comment = typeof body.comment === "string" ? body.comment.replace(/<[^>]*>/g, "").trim().slice(0, 500) || null : null;
 
   if (!score || !Number.isInteger(score) || score < 1 || score > 5) {
     return NextResponse.json({ error: "Score must be 1-5" }, { status: 400 });

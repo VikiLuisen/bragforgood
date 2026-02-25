@@ -57,7 +57,7 @@ export default async function DeedDetailPage({
   const deed = await prisma.deed.findUnique({
     where: { id },
     include: {
-      author: { select: { id: true, name: true, image: true, email: true } },
+      author: { select: { id: true, name: true, image: true } },
       _count: { select: { comments: true, participants: true } },
       reactions: true,
       ratings: {
@@ -102,6 +102,16 @@ export default async function DeedDetailPage({
     : false;
 
   const isAuthor = deed.author.id === session?.user?.id;
+
+  // Only fetch organizer email if user is a joined participant (not the author)
+  let authorEmail: string | null = null;
+  if (isCTA && isJoined && !isAuthor) {
+    const authorData = await prisma.user.findUnique({
+      where: { id: deed.author.id },
+      select: { email: true },
+    });
+    authorEmail = authorData?.email ?? null;
+  }
 
   // Ratings data for past CTAs
   const formattedRatings = deed.ratings.map((r) => ({
@@ -299,11 +309,11 @@ export default async function DeedDetailPage({
       )}
 
       {/* Contact Organizer - visible to joined participants */}
-      {isCTA && isJoined && !isAuthor && deed.author.email && (
+      {isCTA && isJoined && !isAuthor && authorEmail && (
         <div className="card p-4 flex items-center justify-between">
           <span className="text-sm text-[var(--text-secondary)]">Need to reach the organizer?</span>
           <a
-            href={`mailto:${deed.author.email}?subject=${encodeURIComponent(`About: ${deed.title}`)}`}
+            href={`mailto:${authorEmail}?subject=${encodeURIComponent(`About: ${deed.title}`)}`}
             className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)] transition-all"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

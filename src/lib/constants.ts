@@ -71,4 +71,4 @@ export const SUPPORTED_LANGUAGES = {
 
 export type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
 
-export const ADMIN_EMAIL = "vikiluisen@gmail.com";
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "";

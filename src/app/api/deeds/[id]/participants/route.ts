@@ -8,6 +8,11 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
 
   const participants = await prisma.participant.findMany({
@@ -64,41 +69,62 @@ export async function POST(
     return NextResponse.json({ error: "This event has already passed" }, { status: 400 });
   }
 
-  if (deed.maxSpots && deed._count.participants >= deed.maxSpots) {
-    return NextResponse.json({ error: "This event is full" }, { status: 400 });
-  }
-
-  // Check if already joined
-  const existing = await prisma.participant.findUnique({
-    where: { userId_deedId: { userId: session.user.id, deedId: id } },
-  });
-
-  if (existing) {
-    return NextResponse.json({ error: "You've already joined this event" }, { status: 400 });
-  }
-
   let message: string | null = null;
   try {
     const body = await request.json();
     if (body.message && typeof body.message === "string") {
-      message = body.message.trim().slice(0, 200);
+      message = body.message.replace(/<[^>]*>/g, "").trim().slice(0, 200) || null;
     }
   } catch {
     // No body or invalid JSON — that's fine, message is optional
   }
 
-  const participant = await prisma.participant.create({
-    data: {
-      userId: session.user.id,
-      deedId: id,
-      message: message || null,
-    },
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-    },
-  });
+  // Use a transaction to prevent race conditions on maxSpots
+  const userId = session.user.id;
+  let participant;
+  let count: number;
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // Re-check spots and existing participation inside transaction
+      const currentCount = await tx.participant.count({ where: { deedId: id } });
+      if (deed.maxSpots && currentCount >= deed.maxSpots) {
+        throw new Error("FULL");
+      }
 
-  const count = await prisma.participant.count({ where: { deedId: id } });
+      const existing = await tx.participant.findUnique({
+        where: { userId_deedId: { userId, deedId: id } },
+      });
+      if (existing) {
+        throw new Error("ALREADY_JOINED");
+      }
+
+      const created = await tx.participant.create({
+        data: {
+          userId,
+          deedId: id,
+          message: message || null,
+        },
+        include: {
+          user: { select: { id: true, name: true, image: true } },
+        },
+      });
+
+      const newCount = await tx.participant.count({ where: { deedId: id } });
+      return { participant: created, count: newCount };
+    });
+    participant = result.participant;
+    count = result.count;
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === "FULL") {
+        return NextResponse.json({ error: "This event is full" }, { status: 400 });
+      }
+      if (err.message === "ALREADY_JOINED") {
+        return NextResponse.json({ error: "You've already joined this event" }, { status: 400 });
+      }
+    }
+    throw err;
+  }
 
   // Send confirmation email (fire-and-forget)
   if (deed.eventDate && deed.meetingPoint) {
