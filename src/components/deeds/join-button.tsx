@@ -11,6 +11,7 @@ interface JoinButtonProps {
   isAuthor: boolean;
   isPast: boolean;
   sessionUserId?: string;
+  isExample?: boolean;
   compact?: boolean;
 }
 
@@ -22,18 +23,21 @@ export function JoinButton({
   isAuthor,
   isPast,
   sessionUserId,
+  isExample,
   compact,
 }: JoinButtonProps) {
   const [isJoined, setIsJoined] = useState(initialIsJoined);
   const [count, setCount] = useState(initialCount);
   const [pending, setPending] = useState(false);
+  const [showExampleWarning, setShowExampleWarning] = useState(false);
   const [showMessageInput, setShowMessageInput] = useState(false);
   const [message, setMessage] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const router = useRouter();
 
   const isFull = maxSpots !== null && count >= maxSpots;
 
-  async function handleToggle() {
+  function handleClick() {
     if (!sessionUserId) {
       router.push("/sign-in");
       return;
@@ -41,14 +45,38 @@ export function JoinButton({
 
     if (pending || isAuthor || isPast) return;
 
-    if (!isJoined && !showMessageInput) {
-      setShowMessageInput(true);
+    // If already joined, toggle off (leave)
+    if (isJoined) {
+      handleToggle();
       return;
     }
 
+    // Not joined yet: check if example first
+    if (isExample && !showExampleWarning && !showMessageInput) {
+      setShowExampleWarning(true);
+      return;
+    }
+
+    // Show message input if not already showing
+    if (!showMessageInput) {
+      setShowMessageInput(true);
+      return;
+    }
+  }
+
+  function handleExampleConfirm() {
+    setShowExampleWarning(false);
+    setShowMessageInput(true);
+  }
+
+  function handleExampleCancel() {
+    setShowExampleWarning(false);
+  }
+
+  async function handleToggle() {
+    if (pending) return;
     setPending(true);
 
-    // Optimistic update
     const wasJoined = isJoined;
     setIsJoined(!wasJoined);
     setCount((c) => c + (wasJoined ? -1 : 1));
@@ -57,9 +85,12 @@ export function JoinButton({
     try {
       const res = await fetch(`/api/deeds/${deedId}/participants`, {
         method: wasJoined ? "DELETE" : "POST",
-        ...((!wasJoined && message.trim()) ? {
+        ...((!wasJoined) ? {
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: message.trim() }),
+          body: JSON.stringify({
+            ...(message.trim() ? { message: message.trim() } : {}),
+            isPublic,
+          }),
         } : {}),
       });
 
@@ -67,8 +98,8 @@ export function JoinButton({
         const data = await res.json();
         setCount(data.participantCount);
         setMessage("");
+        setIsPublic(true);
       } else {
-        // Revert
         setIsJoined(wasJoined);
         setCount((c) => c + (wasJoined ? 1 : -1));
       }
@@ -87,6 +118,7 @@ export function JoinButton({
   function handleCancelMessage() {
     setShowMessageInput(false);
     setMessage("");
+    setIsPublic(true);
   }
 
   if (isPast) {
@@ -109,7 +141,7 @@ export function JoinButton({
     <div>
       <div className="flex items-center gap-2">
         <button
-          onClick={handleToggle}
+          onClick={handleClick}
           disabled={pending || isAuthor || (isFull && !isJoined)}
           className={`inline-flex items-center gap-1.5 ${compact ? "px-3 py-1.5 text-[11px]" : "px-4 py-2 text-xs"} rounded-full font-semibold transition-all ${
             isJoined
@@ -147,30 +179,67 @@ export function JoinButton({
         </span>
       </div>
 
+      {/* Example post warning */}
+      {showExampleWarning && (
+        <div className="mt-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+          <p className="text-xs text-amber-300 font-medium mb-2">
+            This is an example post to show what bragforgood looks like. It&apos;s not a real event.
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExampleConfirm}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors"
+            >
+              Join anyway
+            </button>
+            <button
+              onClick={handleExampleCancel}
+              className="px-2 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Message input + privacy toggle */}
       {showMessageInput && (
-        <div className="mt-2 flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="Optional: I'll bring..."
-            maxLength={200}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleJoinWithMessage(); }}
-            className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-sky-500/30 placeholder:text-[var(--text-tertiary)]"
-            autoFocus
-          />
-          <button
-            onClick={handleJoinWithMessage}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors"
-          >
-            Join
-          </button>
-          <button
-            onClick={handleCancelMessage}
-            className="px-2 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
-          >
-            Cancel
-          </button>
+        <div className="mt-2 space-y-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Optional: I'll bring..."
+              maxLength={200}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleJoinWithMessage(); }}
+              className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-sky-500/30 placeholder:text-[var(--text-tertiary)]"
+              autoFocus
+            />
+            <button
+              onClick={handleJoinWithMessage}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors"
+            >
+              Join
+            </button>
+            <button
+              onClick={handleCancelMessage}
+              className="px-2 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              className="rounded border-[var(--border)] bg-[var(--bg-card)] text-sky-500 focus:ring-sky-500/30 w-3.5 h-3.5"
+            />
+            <span className="text-[11px] text-[var(--text-tertiary)]">
+              Show my name in the participants list
+            </span>
+          </label>
         </div>
       )}
     </div>

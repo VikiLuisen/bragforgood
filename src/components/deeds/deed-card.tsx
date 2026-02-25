@@ -175,6 +175,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
                 isAuthor={deed.author.id === sessionUserId}
                 isPast={isPast}
                 sessionUserId={sessionUserId}
+                isExample={deed.isExample}
                 compact
               />
             </div>

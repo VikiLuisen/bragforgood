@@ -14,6 +14,7 @@ export interface JoinedEvent {
   participantId: string;
   joinedAt: string;
   message: string | null;
+  isPublic: boolean;
   hasRated: boolean;
   userRating: number | null;
   deed: {
@@ -21,6 +22,7 @@ export interface JoinedEvent {
     title: string;
     category: string;
     type: string;
+    isExample: boolean;
     eventDate: string | null;
     eventEndDate: string | null;
     meetingPoint: string | null;
@@ -67,14 +69,26 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
 
   return (
     <div className="card p-4 border-l-4 border-l-sky-500">
-      {/* Header: title + status */}
+      {/* Header: title + status badges */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <Link href={`/deeds/${event.deed.id}`} className="text-sm font-bold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors line-clamp-2">
           {event.deed.title}
         </Link>
-        <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isPast ? "bg-[var(--bg-elevated)] text-[var(--text-tertiary)]" : "bg-sky-500/10 text-sky-400"}`}>
-          {isPast ? "Passed" : "Upcoming"}
-        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {event.deed.isExample && (
+            <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--accent-dim)] text-[var(--accent)] border border-[rgba(52,211,153,0.15)]">
+              Example
+            </span>
+          )}
+          {!event.isPublic && (
+            <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border border-[var(--border)]">
+              Private
+            </span>
+          )}
+          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isPast ? "bg-[var(--bg-elevated)] text-[var(--text-tertiary)]" : "bg-sky-500/10 text-sky-400"}`}>
+            {isPast ? "Passed" : "Upcoming"}
+          </span>
+        </div>
       </div>
 
       {/* Event details */}

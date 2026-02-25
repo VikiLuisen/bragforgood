@@ -15,22 +15,42 @@ export async function GET(
 
   const { id } = await params;
 
+  // Check if the requester is the deed author
+  const deed = await prisma.deed.findUnique({
+    where: { id },
+    select: { authorId: true },
+  });
+
+  const isAuthor = deed?.authorId === session.user.id;
+
   const participants = await prisma.participant.findMany({
-    where: { deedId: id },
+    where: {
+      deedId: id,
+      // Non-authors only see public participants
+      ...(!isAuthor ? { isPublic: true } : {}),
+    },
     orderBy: { createdAt: "asc" },
     include: {
       user: { select: { id: true, name: true, image: true } },
     },
   });
 
-  return NextResponse.json(
-    participants.map((p) => ({
+  // If author, also count hidden participants for context
+  let privateCount = 0;
+  if (isAuthor) {
+    privateCount = participants.filter((p) => !p.isPublic).length;
+  }
+
+  return NextResponse.json({
+    participants: participants.map((p) => ({
       id: p.id,
       message: p.message,
+      isPublic: p.isPublic,
       createdAt: p.createdAt.toISOString(),
       user: p.user,
-    }))
-  );
+    })),
+    privateCount,
+  });
 }
 
 export async function POST(
@@ -70,10 +90,14 @@ export async function POST(
   }
 
   let message: string | null = null;
+  let isPublic = true;
   try {
     const body = await request.json();
     if (body.message && typeof body.message === "string") {
       message = body.message.replace(/<[^>]*>/g, "").trim().slice(0, 200) || null;
+    }
+    if (typeof body.isPublic === "boolean") {
+      isPublic = body.isPublic;
     }
   } catch {
     // No body or invalid JSON — that's fine, message is optional
@@ -85,7 +109,6 @@ export async function POST(
   let count: number;
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // Re-check spots and existing participation inside transaction
       const currentCount = await tx.participant.count({ where: { deedId: id } });
       if (deed.maxSpots && currentCount >= deed.maxSpots) {
         throw new Error("FULL");
@@ -103,6 +126,7 @@ export async function POST(
           userId,
           deedId: id,
           message: message || null,
+          isPublic,
         },
         include: {
           user: { select: { id: true, name: true, image: true } },
@@ -142,7 +166,7 @@ export async function POST(
         meetingPoint: deed.meetingPoint,
         whatToBring: deed.whatToBring,
         deedId: id,
-      }).catch(() => {}); // Don't block the response
+      }).catch(() => {});
     }
   }
 

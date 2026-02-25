@@ -225,6 +225,7 @@ export default async function DeedDetailPage({
                     isAuthor={deed.author.id === session?.user?.id}
                     isPast={isPast}
                     sessionUserId={session?.user?.id}
+                    isExample={deed.isExample}
                   />
                 </div>
               </div>
@@ -273,40 +274,59 @@ export default async function DeedDetailPage({
       </article>
 
       {/* Participants list for CTAs */}
-      {isCTA && deed.participants.length > 0 && (
-        <div className="card p-6">
-          <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
-            Participants ({deed._count.participants})
-          </h2>
-          <div className="space-y-3">
-            {deed.participants.map((p) => (
-              <div key={p.id} className="flex items-start gap-3">
-                <Link href={`/profile/${p.user.id}`} className="shrink-0">
-                  <Avatar name={p.user.name} image={p.user.image} size="sm" />
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/profile/${p.user.id}`}
-                      className="text-[13px] font-semibold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
-                    >
-                      {p.user.name}
-                    </Link>
-                    <span className="text-[10px] text-[var(--text-tertiary)]">
-                      {formatDate(p.createdAt)}
-                    </span>
+      {isCTA && deed.participants.length > 0 && (() => {
+        const visibleParticipants = isAuthor
+          ? deed.participants
+          : deed.participants.filter((p) => p.isPublic);
+        const privateCount = isAuthor
+          ? deed.participants.filter((p) => !p.isPublic).length
+          : deed._count.participants - visibleParticipants.length;
+
+        return visibleParticipants.length > 0 || privateCount > 0 ? (
+          <div className="card p-6">
+            <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider mb-4">
+              Participants ({deed._count.participants})
+            </h2>
+            <div className="space-y-3">
+              {visibleParticipants.map((p) => (
+                <div key={p.id} className="flex items-start gap-3">
+                  <Link href={`/profile/${p.user.id}`} className="shrink-0">
+                    <Avatar name={p.user.name} image={p.user.image} size="sm" />
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/profile/${p.user.id}`}
+                        className="text-[13px] font-semibold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
+                      >
+                        {p.user.name}
+                      </Link>
+                      {isAuthor && !p.isPublic && (
+                        <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border border-[var(--border)]">
+                          Private
+                        </span>
+                      )}
+                      <span className="text-[10px] text-[var(--text-tertiary)]">
+                        {formatDate(p.createdAt)}
+                      </span>
+                    </div>
+                    {p.message && (
+                      <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">
+                        &ldquo;{p.message}&rdquo;
+                      </p>
+                    )}
                   </div>
-                  {p.message && (
-                    <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">
-                      &ldquo;{p.message}&rdquo;
-                    </p>
-                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+              {!isAuthor && privateCount > 0 && (
+                <p className="text-xs text-[var(--text-tertiary)] italic">
+                  +{privateCount} {privateCount === 1 ? "participant prefers" : "participants prefer"} to stay private
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        ) : null;
+      })()}
 
       {/* Contact Organizer - visible to joined participants */}
       {isCTA && isJoined && !isAuthor && authorEmail && (

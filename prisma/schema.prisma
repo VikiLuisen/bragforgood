@@ -119,6 +119,7 @@ model Report {
 model Participant {
   id        String   @id @default(cuid())
   message   String?
+  isPublic  Boolean  @default(true)
   createdAt DateTime @default(now())
 
   userId String

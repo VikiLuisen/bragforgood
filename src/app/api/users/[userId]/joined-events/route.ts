@@ -48,6 +48,7 @@ export async function GET(
     participantId: p.id,
     joinedAt: p.createdAt.toISOString(),
     message: p.message,
+    isPublic: p.isPublic,
     hasRated: ratedMap.has(p.deed.id),
     userRating: ratedMap.get(p.deed.id) || null,
     deed: {
@@ -56,6 +57,7 @@ export async function GET(
       description: p.deed.description,
       category: p.deed.category,
       type: p.deed.type,
+      isExample: p.deed.isExample,
       eventDate: p.deed.eventDate?.toISOString() || null,
       eventEndDate: p.deed.eventEndDate?.toISOString() || null,
       meetingPoint: p.deed.meetingPoint,
