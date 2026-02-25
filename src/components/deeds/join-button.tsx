@@ -190,7 +190,7 @@ export function JoinButton({
               onClick={handleExampleConfirm}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors"
             >
-              Sign me up so I can see how this works
+              Let me try it
             </button>
             <button
               onClick={handleExampleCancel}
