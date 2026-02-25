@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/useTranslation";
 
 interface CommentFormProps {
   deedId: string;
@@ -11,6 +12,7 @@ interface CommentFormProps {
 
 export function CommentForm({ deedId, onCommentPosted }: CommentFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +39,7 @@ export function CommentForm({ deedId, onCommentPosted }: CommentFormProps) {
       if (data.moderation) {
         setModError(data.error);
       } else {
-        setError(data.error || "Failed to post comment");
+        setError(data.error || t("commentSection.postFailed"));
       }
       return;
     }
@@ -67,12 +69,12 @@ export function CommentForm({ deedId, onCommentPosted }: CommentFormProps) {
           type="text"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Add a kind word..."
+          placeholder={t("commentSection.placeholder")}
           className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 text-sm text-[var(--text-primary)] shadow-sm placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-light)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all"
           maxLength={500}
         />
         <Button type="submit" size="sm" loading={loading} disabled={!body.trim()}>
-          Post
+          {t("commentSection.post")}
         </Button>
       </div>
     </form>

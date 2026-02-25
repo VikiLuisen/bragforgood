@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 import { resetPasswordSchema } from "@/lib/validations/auth";
+import { useTranslation } from "@/lib/useTranslation";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const token = searchParams.get("token") || "";
 
   const [password, setPassword] = useState("");
@@ -23,10 +25,10 @@ function ResetPasswordForm() {
     return (
       <div className="text-center space-y-3">
         <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-xl font-medium">
-          Invalid reset link. Please request a new one.
+          {t("auth.invalidResetLink")}
         </div>
         <Link href="/forgot-password" className="text-[var(--accent)] hover:brightness-110 font-semibold text-sm transition-all">
-          Request new reset link
+          {t("auth.requestNewLink")}
         </Link>
       </div>
     );
@@ -58,12 +60,12 @@ function ResetPasswordForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrors({ form: data.error || "Something went wrong" });
+        setErrors({ form: data.error || t("auth.somethingWentWrong") });
       } else {
         router.push("/sign-in?reset=success");
       }
     } catch {
-      setErrors({ form: "Something went wrong" });
+      setErrors({ form: t("auth.somethingWentWrong") });
     } finally {
       setLoading(false);
     }
@@ -79,9 +81,9 @@ function ResetPasswordForm() {
 
       <Input
         id="password"
-        label="New Password"
+        label={t("auth.newPassword")}
         type="password"
-        placeholder="At least 8 characters"
+        placeholder={t("auth.atLeast8")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         error={errors.password}
@@ -90,9 +92,9 @@ function ResetPasswordForm() {
 
       <Input
         id="confirmPassword"
-        label="Confirm New Password"
+        label={t("auth.confirmNewPassword")}
         type="password"
-        placeholder="Re-enter your new password"
+        placeholder={t("auth.reenterNewPassword")}
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         error={errors.confirmPassword}
@@ -100,20 +102,22 @@ function ResetPasswordForm() {
       />
 
       <Button type="submit" className="w-full" loading={loading}>
-        Reset Password
+        {t("auth.resetPassword")}
       </Button>
     </form>
   );
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm animate-fade-in">
         <div className="text-center mb-8">
           <Logo size="lg" href="/" />
-          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">Set a new password</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">Make it strong. Your good deeds deserve protection.</p>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">{t("auth.setNewPassword")}</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{t("auth.makeItStrong")}</p>
         </div>
 
         <div className="card p-6">
@@ -123,9 +127,9 @@ export default function ResetPasswordPage() {
         </div>
 
         <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
-          Remember your password?{" "}
+          {t("auth.rememberPassword")}{" "}
           <Link href="/sign-in" className="text-[var(--accent)] hover:brightness-110 font-semibold transition-all">
-            Sign In
+            {t("auth.signIn")}
           </Link>
         </p>
       </div>

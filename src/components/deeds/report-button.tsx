@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/lib/useTranslation";
 
 interface ReportButtonProps {
   deedId: string;
 }
 
-const REASONS = [
-  { value: "not_good_deed", label: "Not a good post" },
-  { value: "spam", label: "Spam / self-promotion" },
-  { value: "offensive", label: "Offensive content" },
-  { value: "other", label: "Other" },
-];
-
 export function ReportButton({ deedId }: ReportButtonProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  const REASONS = [
+    { value: "not_good_deed", label: t("deed.reportNotGood") },
+    { value: "spam", label: t("deed.reportSpam") },
+    { value: "offensive", label: t("deed.reportOffensive") },
+    { value: "other", label: t("deed.reportOther") },
+  ];
 
   async function handleReport(reason: string) {
     setError("");
@@ -34,14 +36,14 @@ export function ReportButton({ deedId }: ReportButtonProps) {
       }, 2000);
     } else {
       const data = await res.json();
-      setError(data.error || "Failed to report");
+      setError(data.error || t("deed.reportFailed"));
     }
   }
 
   if (submitted) {
     return (
       <span className="text-[11px] text-[var(--accent)] font-medium">
-        Reported — thanks
+        {t("deed.reported")}
       </span>
     );
   }
@@ -51,7 +53,7 @@ export function ReportButton({ deedId }: ReportButtonProps) {
       <button
         onClick={() => setOpen(!open)}
         className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors p-1"
-        title="Report post"
+        title={t("deed.report")}
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z" />
@@ -63,7 +65,7 @@ export function ReportButton({ deedId }: ReportButtonProps) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 bottom-full mb-1 z-50 w-48 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border)] shadow-xl py-1">
             <div className="px-3 py-1.5 text-[10px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Report as
+              {t("deed.reportAs")}
             </div>
             {error && (
               <div className="px-3 py-1 text-[10px] text-red-400">{error}</div>

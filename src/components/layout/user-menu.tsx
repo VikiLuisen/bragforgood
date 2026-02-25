@@ -4,9 +4,11 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Avatar } from "@/components/ui/avatar";
+import { useTranslation } from "@/lib/useTranslation";
 
 export function UserMenu() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -39,14 +41,14 @@ export function UserMenu() {
             className="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
             onClick={() => setOpen(false)}
           >
-            My Profile
+            {t("userMenu.myProfile")}
           </Link>
           <Link
             href="/leaderboard"
             className="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
             onClick={() => setOpen(false)}
           >
-            Leaderboard
+            {t("userMenu.leaderboard")}
           </Link>
           {Boolean((session.user as Record<string, unknown>).isAdmin) && (
             <Link
@@ -54,7 +56,7 @@ export function UserMenu() {
               className="block px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
               onClick={() => setOpen(false)}
             >
-              Admin
+              {t("userMenu.admin")}
             </Link>
           )}
           <div className="h-px bg-[var(--border)] mx-3" />
@@ -63,35 +65,35 @@ export function UserMenu() {
             className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
             onClick={() => setOpen(false)}
           >
-            Impressum
+            {t("userMenu.impressum")}
           </Link>
           <Link
             href="/privacy"
             className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
             onClick={() => setOpen(false)}
           >
-            Privacy Policy
+            {t("userMenu.privacy")}
           </Link>
           <Link
             href="/terms"
             className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
             onClick={() => setOpen(false)}
           >
-            Terms
+            {t("userMenu.terms")}
           </Link>
           <Link
             href="/contact"
             className="block px-4 py-2 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
             onClick={() => setOpen(false)}
           >
-            Contact
+            {t("userMenu.contact")}
           </Link>
           <div className="h-px bg-[var(--border)] mx-3" />
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="block w-full text-left px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-medium transition-colors"
           >
-            Sign Out
+            {t("userMenu.signOut")}
           </button>
         </div>
       )}

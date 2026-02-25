@@ -8,10 +8,12 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
+import { useTranslation } from "@/lib/useTranslation";
 
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const resetSuccess = searchParams.get("reset") === "success";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,7 @@ function SignInForm() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError(t("auth.invalidCredentials"));
     } else {
       router.push("/feed");
       router.refresh();
@@ -44,15 +46,15 @@ function SignInForm() {
       <div className="w-full max-w-sm animate-fade-in">
         <div className="text-center mb-8">
           <Logo size="lg" href="/" />
-          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">Back to brag?</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">Good. The world needs more show-offs like you.</p>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">{t("auth.backToBrag")}</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{t("auth.worldNeeds")}</p>
         </div>
 
         <div className="card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {resetSuccess && (
               <div className="bg-[var(--accent)]/10 text-[var(--accent)] text-sm p-3 rounded-xl text-center font-medium">
-                Password updated! Sign in with your new password.
+                {t("auth.passwordUpdated")}
               </div>
             )}
 
@@ -64,9 +66,9 @@ function SignInForm() {
 
             <Input
               id="email"
-              label="Email"
+              label={t("auth.email")}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -74,9 +76,9 @@ function SignInForm() {
 
             <Input
               id="password"
-              label="Password"
+              label={t("auth.password")}
               type="password"
-              placeholder="Your password"
+              placeholder={t("auth.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -84,20 +86,20 @@ function SignInForm() {
 
             <div className="flex justify-end">
               <Link href="/forgot-password" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors">
-                Forgot your password?
+                {t("auth.forgotPassword")}
               </Link>
             </div>
 
             <Button type="submit" className="w-full" loading={loading}>
-              Sign In
+              {t("auth.signIn")}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
-          Don&apos;t have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <Link href="/sign-up" className="text-[var(--accent)] hover:brightness-110 font-semibold transition-all">
-            Sign Up
+            {t("auth.signUp")}
           </Link>
         </p>
       </div>

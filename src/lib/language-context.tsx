@@ -23,15 +23,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<LanguageCode>("en");
   const [autoTranslate, setAutoTranslateState] = useState(false);
 
-  // Fetch user's preferred language on mount
+  // Fetch user's preferred language on mount (or from localStorage for guests)
   useEffect(() => {
-    if (!session?.user) return;
-    fetch("/api/users/language")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.lang) setLangState(data.lang as LanguageCode);
-      })
-      .catch(() => {});
+    if (session?.user) {
+      fetch("/api/users/language")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.lang) setLangState(data.lang as LanguageCode);
+        })
+        .catch(() => {});
+    } else {
+      const stored = localStorage.getItem("bfg-lang");
+      if (stored) setLangState(stored as LanguageCode);
+    }
   }, [session?.user]);
 
   // Load auto-translate preference from localStorage
@@ -42,13 +46,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLang = useCallback((newLang: LanguageCode) => {
     setLangState(newLang);
-    // Save to server
-    fetch("/api/users/language", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lang: newLang }),
-    }).catch(() => {});
-  }, []);
+    // Save to localStorage (always, for guest fallback)
+    localStorage.setItem("bfg-lang", newLang);
+    // Save to server if logged in
+    if (session?.user) {
+      fetch("/api/users/language", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lang: newLang }),
+      }).catch(() => {});
+    }
+  }, [session?.user]);
 
   const setAutoTranslate = useCallback((value: boolean) => {
     setAutoTranslateState(value);

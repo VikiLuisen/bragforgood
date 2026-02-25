@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 import { signUpSchema } from "@/lib/validations/auth";
+import { useTranslation } from "@/lib/useTranslation";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +44,7 @@ export default function SignUpPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setErrors({ form: data.error || "Something went wrong" });
+      setErrors({ form: data.error || t("auth.somethingWentWrong") });
       setLoading(false);
       return;
     }
@@ -56,7 +58,7 @@ export default function SignUpPage() {
     setLoading(false);
 
     if (result?.error) {
-      setErrors({ form: "Account created but sign-in failed. Please sign in manually." });
+      setErrors({ form: t("auth.signInFailed") });
     } else {
       router.push("/feed");
       router.refresh();
@@ -68,8 +70,8 @@ export default function SignUpPage() {
       <div className="w-full max-w-sm animate-fade-in">
         <div className="text-center mb-8">
           <Logo size="lg" href="/" />
-          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">Ready to show off?</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">Join the most shameless do-gooders on the internet.</p>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">{t("auth.readyToShowOff")}</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{t("auth.joinShameless")}</p>
         </div>
 
         <div className="card p-6">
@@ -82,8 +84,8 @@ export default function SignUpPage() {
 
             <Input
               id="name"
-              label="Name"
-              placeholder="Your name"
+              label={t("auth.name")}
+              placeholder={t("auth.namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               error={errors.name}
@@ -92,9 +94,9 @@ export default function SignUpPage() {
 
             <Input
               id="email"
-              label="Email"
+              label={t("auth.email")}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
@@ -103,9 +105,9 @@ export default function SignUpPage() {
 
             <Input
               id="password"
-              label="Password"
+              label={t("auth.password")}
               type="password"
-              placeholder="At least 8 characters"
+              placeholder={t("auth.atLeast8")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={errors.password}
@@ -114,9 +116,9 @@ export default function SignUpPage() {
 
             <Input
               id="confirmPassword"
-              label="Confirm Password"
+              label={t("auth.confirmPassword")}
               type="password"
-              placeholder="Re-enter your password"
+              placeholder={t("auth.reenterPassword")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               error={errors.confirmPassword}
@@ -124,15 +126,15 @@ export default function SignUpPage() {
             />
 
             <Button type="submit" className="w-full" loading={loading}>
-              Create Account
+              {t("auth.createAccount")}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
-          Already have an account?{" "}
+          {t("auth.alreadyHaveAccount")}{" "}
           <Link href="/sign-in" className="text-[var(--accent)] hover:brightness-110 font-semibold transition-all">
-            Sign In
+            {t("auth.signIn")}
           </Link>
         </p>
       </div>

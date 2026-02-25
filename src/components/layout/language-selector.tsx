@@ -2,11 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/lib/language-context";
+import { useTranslation } from "@/lib/useTranslation";
 import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 import type { LanguageCode } from "@/lib/constants";
 
 export function LanguageSelector() {
   const { lang, setLang, autoTranslate, setAutoTranslate } = useLanguage();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +45,7 @@ export function LanguageSelector() {
               onClick={() => setAutoTranslate(!autoTranslate)}
               className="flex items-center justify-between w-full text-[12px] font-medium"
             >
-              <span className="text-[var(--text-secondary)]">Auto-translate feed</span>
+              <span className="text-[var(--text-secondary)]">{t("langSelector.autoTranslate")}</span>
               <div className={`w-8 h-4.5 rounded-full transition-colors relative ${autoTranslate ? "bg-[var(--accent)]" : "bg-[var(--border-light)]"}`}>
                 <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-transform ${autoTranslate ? "translate-x-4" : "translate-x-0.5"}`} />
               </div>
@@ -52,8 +54,7 @@ export function LanguageSelector() {
 
           <div className="py-1">
             <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">
-              Translate posts to
-              <span className="ml-1.5 normal-case tracking-normal text-[var(--accent)] opacity-70">— coming soon</span>
+              {t("langSelector.language")}
             </div>
             {languages.map(([code, name]) => (
               <button

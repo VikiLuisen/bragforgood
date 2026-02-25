@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DEED_CATEGORIES } from "@/lib/constants";
 import { createDeedSchema } from "@/lib/validations/deed";
+import { useTranslation } from "@/lib/useTranslation";
 
 const categoryOptions = Object.entries(DEED_CATEGORIES).map(([value, { label }]) => ({
   value,
@@ -26,6 +27,7 @@ interface EditDeedFormProps {
 
 export function EditDeedForm({ deed }: EditDeedFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(deed.title);
   const [description, setDescription] = useState(deed.description);
@@ -48,11 +50,11 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
     for (const file of toAdd) {
       if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({ ...prev, photo: "Please select image files only" }));
+        setErrors((prev) => ({ ...prev, photo: t("deed.imageOnly") }));
         return;
       }
       if (file.size > 4 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, photo: "Each image must be less than 4MB" }));
+        setErrors((prev) => ({ ...prev, photo: t("deed.imageTooLarge") }));
         return;
       }
     }
@@ -96,7 +98,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
       if (!res.ok) {
         setUploading(false);
-        let message = "Failed to upload image";
+        let message = t("deed.uploadFailed");
         try { const data = await res.json(); message = data.error || message; } catch {}
         throw new Error(message);
       }
@@ -117,7 +119,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
     try {
       uploadedUrls = await uploadPendingPhotos();
     } catch (err) {
-      setErrors({ photo: err instanceof Error ? err.message : "Failed to upload image" });
+      setErrors({ photo: err instanceof Error ? err.message : t("deed.uploadFailed") });
       return;
     }
 
@@ -152,7 +154,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
     if (!res.ok) {
       const data = await res.json();
-      setErrors({ form: data.error || "Something went wrong" });
+      setErrors({ form: data.error || t("common.somethingWentWrong") });
       return;
     }
 
@@ -163,8 +165,8 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Edit your brag</h1>
-        <p className="text-sm text-[var(--text-secondary)] mt-0.5">Update your post.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{t("deed.editTitle")}</h1>
+        <p className="text-sm text-[var(--text-secondary)] mt-0.5">{t("deed.editSubtitle")}</p>
       </div>
 
       <div className="card p-6">
@@ -177,8 +179,8 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <Input
             id="title"
-            label="What are you bragging about?"
-            placeholder="e.g., Cleaned up the park near Main St."
+            label={t("deed.titleBrag")}
+            placeholder={t("deed.titlePlaceholderBrag")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             error={errors.title}
@@ -187,8 +189,8 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <Textarea
             id="description"
-            label="Give us the details"
-            placeholder="Don't be modest — spill it all..."
+            label={t("deed.descriptionBrag")}
+            placeholder={t("deed.descPlaceholderBrag")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             error={errors.description}
@@ -197,7 +199,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <div className="space-y-1.5">
             <label htmlFor="category" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Category
+              {t("deed.category")}
             </label>
             <select
               id="category"
@@ -206,7 +208,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
               className="block w-full rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2.5 text-sm text-[var(--text-primary)] shadow-sm focus:border-[var(--border-light)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all"
               required
             >
-              <option value="">Select a category</option>
+              <option value="">{t("deed.selectCategory")}</option>
               {categoryOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -219,7 +221,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
           {/* Photos */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Photos (up to 5)
+              {t("deed.photos")}
             </label>
 
             {(photoUrls.length > 0 || pendingFiles.length > 0) && (
@@ -265,10 +267,10 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <p className="text-sm text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] mt-1.5 font-medium transition-colors">
-                  {totalPhotos === 0 ? "Add photos" : "Add more photos"}
+                  {totalPhotos === 0 ? t("deed.tapToAdd") : t("deed.addMore")}
                 </p>
                 <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
-                  {5 - totalPhotos} remaining
+                  {5 - totalPhotos} {t("deed.remaining")}
                 </p>
               </button>
             )}
@@ -286,8 +288,8 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <Input
             id="location"
-            label="Location (optional)"
-            placeholder="e.g., Central Park, New York"
+            label={t("deed.location")}
+            placeholder={t("deed.locationPlaceholder")}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             error={errors.location}
@@ -295,7 +297,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <div className="flex gap-3">
             <Button type="submit" className="flex-1" size="lg" loading={loading || uploading}>
-              {uploading ? "Uploading photos..." : "Save Changes"}
+              {uploading ? t("deed.uploadingPhotos") : t("deed.saveChanges")}
             </Button>
             <Button
               type="button"
@@ -303,7 +305,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
               size="lg"
               onClick={() => router.back()}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-const taglines = [
-  "Doing good is contagious. So is talking about it.",
-  "Make someone\u2019s day. Then tell us about it.",
-  "Show off your good side.",
-];
+import { useTranslation } from "@/lib/useTranslation";
 
 export function RotatingTagline() {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [fade, setFade] = useState(true);
+
+  const taglines = [
+    t("feed.tagline1"),
+    t("feed.tagline2"),
+    t("feed.tagline3"),
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {

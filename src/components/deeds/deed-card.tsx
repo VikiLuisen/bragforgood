@@ -12,6 +12,7 @@ import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { StarDisplay } from "@/components/ratings/star-display";
 import { TranslateButton } from "@/components/ui/translate-button";
 import { InlineCommentSection } from "@/components/comments/inline-comment-section";
+import { useTranslation } from "@/lib/useTranslation";
 import { formatDate, formatEventDate } from "@/lib/utils";
 import type { DeedWithAuthor } from "@/types";
 
@@ -21,6 +22,7 @@ interface DeedCardProps {
 }
 
 export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
+  const { t } = useTranslation();
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(deed._count.comments);
@@ -66,12 +68,12 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
             <span className="text-[11px] text-[var(--text-tertiary)]">{formatDate(deed.createdAt)}</span>
             {deed.isExample && (
               <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--accent-dim)] text-[var(--accent)] border border-[rgba(52,211,153,0.15)]">
-                Example
+                {t("deed.example")}
               </span>
             )}
             {isCTA && (
               <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/20">
-                Call to Action
+                {t("deed.callToAction")}
               </span>
             )}
           </div>
@@ -87,7 +89,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
 
           {translatedText && (
             <span className="text-[10px] text-[var(--accent)] font-medium mt-0.5 inline-block opacity-70">
-              Translated
+              {t("deed.translated")}
             </span>
           )}
 
@@ -119,7 +121,7 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
                   <svg className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
-                  <span>Bring: {deed.whatToBring}</span>
+                  <span>{t("deed.bring")} {deed.whatToBring}</span>
                 </div>
               )}
             </div>
@@ -207,11 +209,11 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
                       : "text-[var(--text-tertiary)] hover:text-[var(--accent)]"
                   }`}
                 >
-                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                  {commentCount} {commentCount === 1 ? t("deed.comment") : t("deed.comments")}
                 </button>
               ) : (
                 <span className="text-[11px] text-[var(--text-tertiary)] font-medium">
-                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                  {commentCount} {commentCount === 1 ? t("deed.comment") : t("deed.comments")}
                 </span>
               )}
               {sessionUserId && (

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DEED_CATEGORIES } from "@/lib/constants";
 import { createDeedSchema } from "@/lib/validations/deed";
+import { useTranslation } from "@/lib/useTranslation";
 import type { DeedType } from "@/lib/constants";
 
 const categoryOptions = Object.entries(DEED_CATEGORIES).map(([value, { label }]) => ({
@@ -17,6 +18,7 @@ const categoryOptions = Object.entries(DEED_CATEGORIES).map(([value, { label }])
 export function DeedForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initialType = searchParams.get("type") === "CALL_TO_ACTION" ? "CALL_TO_ACTION" : "BRAG";
   const [deedType, setDeedType] = useState<DeedType>(initialType);
@@ -45,11 +47,11 @@ export function DeedForm() {
 
     for (const file of toAdd) {
       if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({ ...prev, photo: "Please select image files only" }));
+        setErrors((prev) => ({ ...prev, photo: t("deed.imageOnly") }));
         return;
       }
       if (file.size > 4 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, photo: "Each image must be less than 4MB" }));
+        setErrors((prev) => ({ ...prev, photo: t("deed.imageTooLarge") }));
         return;
       }
     }
@@ -89,7 +91,7 @@ export function DeedForm() {
 
       if (!res.ok) {
         setUploading(false);
-        let message = "Failed to upload image";
+        let message = t("deed.uploadFailed");
         try { const data = await res.json(); message = data.error || message; } catch {}
         throw new Error(message);
       }
@@ -110,7 +112,7 @@ export function DeedForm() {
     try {
       photoUrls = await uploadPhotos();
     } catch (err) {
-      setErrors({ photo: err instanceof Error ? err.message : "Failed to upload image" });
+      setErrors({ photo: err instanceof Error ? err.message : t("deed.uploadFailed") });
       return;
     }
 
@@ -154,7 +156,7 @@ export function DeedForm() {
       if (data.moderation) {
         setErrors({ moderation: data.error });
       } else {
-        setErrors({ form: data.error || "Something went wrong" });
+        setErrors({ form: data.error || t("common.somethingWentWrong") });
       }
       return;
     }
@@ -171,10 +173,10 @@ export function DeedForm() {
     <div className="animate-fade-in">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-          {isCTA ? "Rally the troops" : "Brag about it"}
+          {isCTA ? t("deed.rallyTitle") : t("deed.bragTitle")}
         </h1>
         <p className="text-sm text-[var(--text-secondary)] mt-0.5">
-          {isCTA ? "Organize something good. Get people involved." : "Go on, tell everyone how awesome you are."}
+          {isCTA ? t("deed.rallySubtitle") : t("deed.bragSubtitle")}
         </p>
       </div>
 
@@ -193,7 +195,7 @@ export function DeedForm() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
-            Brag
+            {t("deed.typeBrag")}
           </button>
           <button
             type="button"
@@ -207,7 +209,7 @@ export function DeedForm() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Call to Action
+            {t("deed.typeCTA")}
           </button>
         </div>
 
@@ -230,8 +232,8 @@ export function DeedForm() {
 
           <Input
             id="title"
-            label={isCTA ? "What are you organizing?" : "What are you bragging about?"}
-            placeholder={isCTA ? "e.g., Beach cleanup at Seefeld" : "e.g., Cleaned up the park near Main St."}
+            label={isCTA ? t("deed.titleCTA") : t("deed.titleBrag")}
+            placeholder={isCTA ? t("deed.titlePlaceholderCTA") : t("deed.titlePlaceholderBrag")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             error={errors.title}
@@ -240,8 +242,8 @@ export function DeedForm() {
 
           <Textarea
             id="description"
-            label={isCTA ? "Tell people what this is about" : "Give us the details"}
-            placeholder={isCTA ? "Describe the event — what will you do, why it matters..." : "Don't be modest — spill it all..."}
+            label={isCTA ? t("deed.descriptionCTA") : t("deed.descriptionBrag")}
+            placeholder={isCTA ? t("deed.descPlaceholderCTA") : t("deed.descPlaceholderBrag")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             error={errors.description}
@@ -250,7 +252,7 @@ export function DeedForm() {
 
           <div className="space-y-1.5">
             <label htmlFor="category" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Category
+              {t("deed.category")}
             </label>
             <select
               id="category"
@@ -259,7 +261,7 @@ export function DeedForm() {
               className="block w-full rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2.5 text-sm text-[var(--text-primary)] shadow-sm focus:border-[var(--border-light)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all"
               required
             >
-              <option value="">Select a category</option>
+              <option value="">{t("deed.selectCategory")}</option>
               {categoryOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -276,13 +278,13 @@ export function DeedForm() {
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Event Details
+                {t("deed.eventDetailsSection")}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label htmlFor="eventDate" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                    Start date & time *
+                    {t("deed.startDate")}
                   </label>
                   <input
                     id="eventDate"
@@ -298,7 +300,7 @@ export function DeedForm() {
 
                 <div className="space-y-1.5">
                   <label htmlFor="eventEndDate" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                    End date & time
+                    {t("deed.endDate")}
                   </label>
                   <input
                     id="eventEndDate"
@@ -314,12 +316,12 @@ export function DeedForm() {
 
               <div className="space-y-1.5">
                 <label htmlFor="meetingPoint" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                  Meeting point *
+                  {t("deed.meetingPoint")}
                 </label>
                 <input
                   id="meetingPoint"
                   type="text"
-                  placeholder="e.g., Main entrance of Central Park"
+                  placeholder={t("deed.meetingPointPlaceholder")}
                   maxLength={200}
                   value={meetingPoint}
                   onChange={(e) => setMeetingPoint(e.target.value)}
@@ -331,11 +333,11 @@ export function DeedForm() {
 
               <div className="space-y-1.5">
                 <label htmlFor="whatToBring" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                  What to bring (optional)
+                  {t("deed.whatToBring")}
                 </label>
                 <textarea
                   id="whatToBring"
-                  placeholder="e.g., Trash bags, gloves, water bottle"
+                  placeholder={t("deed.whatToBringPlaceholder")}
                   maxLength={500}
                   rows={2}
                   value={whatToBring}
@@ -347,14 +349,14 @@ export function DeedForm() {
 
               <div className="space-y-1.5">
                 <label htmlFor="maxSpots" className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                  Max participants (optional)
+                  {t("deed.maxParticipants")}
                 </label>
                 <input
                   id="maxSpots"
                   type="number"
                   min={1}
                   max={500}
-                  placeholder="Leave empty for unlimited"
+                  placeholder={t("deed.unlimitedSpots")}
                   value={maxSpots}
                   onChange={(e) => setMaxSpots(e.target.value)}
                   className="block w-full rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2.5 text-sm text-[var(--text-primary)] shadow-sm focus:border-[var(--border-light)] focus:outline-none focus:ring-2 focus:ring-sky-500/30 transition-all placeholder:text-[var(--text-tertiary)]"
@@ -367,7 +369,7 @@ export function DeedForm() {
           {/* Photo upload */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Photos (up to 5)
+              {t("deed.photos")}
             </label>
 
             {pendingFiles.length > 0 && (
@@ -400,10 +402,10 @@ export function DeedForm() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
                 </svg>
                 <p className="text-sm text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] mt-1.5 font-medium transition-colors">
-                  {pendingFiles.length === 0 ? "Tap to add photos" : "Add more photos"}
+                  {pendingFiles.length === 0 ? t("deed.tapToAdd") : t("deed.addMore")}
                 </p>
                 <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
-                  JPEG, PNG, WebP, or GIF up to 4MB each ({5 - pendingFiles.length} remaining)
+                  {t("deed.photoFormat")} ({5 - pendingFiles.length} {t("deed.remaining")})
                 </p>
               </button>
             )}
@@ -422,8 +424,8 @@ export function DeedForm() {
           {!isCTA && (
             <Input
               id="location"
-              label="Location (optional)"
-              placeholder="e.g., Central Park, New York"
+              label={t("deed.location")}
+              placeholder={t("deed.locationPlaceholder")}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               error={errors.location}
@@ -431,7 +433,7 @@ export function DeedForm() {
           )}
 
           <Button type="submit" className="w-full" size="lg" loading={loading || uploading}>
-            {uploading ? "Uploading photos..." : isCTA ? "Rally the Troops" : "Post Your Brag"}
+            {uploading ? t("deed.uploadingPhotos") : isCTA ? t("deed.rallyButton") : t("deed.postBrag")}
           </Button>
         </form>
       </div>

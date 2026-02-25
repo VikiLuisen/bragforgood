@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { DeedFeed } from "@/components/deeds/deed-feed";
 import { JoinedEventCard, type JoinedEvent } from "./joined-event-card";
+import { useTranslation } from "@/lib/useTranslation";
 import type { DeedWithAuthor } from "@/types";
 
 interface ProfileTabsProps {
@@ -22,6 +23,7 @@ export function ProfileTabs({
   initialJoinedCursor,
   isOwnProfile,
 }: ProfileTabsProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"posts" | "joined">("posts");
   const [joinedEvents, setJoinedEvents] = useState(initialJoinedEvents);
   const [joinedCursor, setJoinedCursor] = useState(initialJoinedCursor);
@@ -49,8 +51,8 @@ export function ProfileTabs({
   }
 
   const tabs = [
-    { id: "posts" as const, label: "Posts", count: null },
-    { id: "joined" as const, label: "Joined Events", count: initialJoinedEvents.length > 0 ? initialJoinedEvents.length : null },
+    { id: "posts" as const, label: t("profile.tabPosts"), count: null },
+    { id: "joined" as const, label: t("profile.tabJoined"), count: initialJoinedEvents.length > 0 ? initialJoinedEvents.length : null },
   ];
 
   return (
@@ -89,7 +91,7 @@ export function ProfileTabs({
           {joinedEvents.length === 0 ? (
             <div className="card p-8 text-center">
               <p className="text-[var(--text-tertiary)]">
-                {isOwnProfile ? "You haven't joined any events yet." : "No joined events."}
+                {isOwnProfile ? t("profile.noJoinedOwn") : t("profile.noJoined")}
               </p>
             </div>
           ) : (
@@ -107,7 +109,7 @@ export function ProfileTabs({
                   disabled={loadingMore}
                   className="w-full py-3 text-sm font-semibold text-[var(--accent)] hover:underline disabled:opacity-50"
                 >
-                  {loadingMore ? "Loading..." : "Load more"}
+                  {loadingMore ? t("common.loading") : t("common.loadMore")}
                 </button>
               )}
             </>

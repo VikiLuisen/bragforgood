@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/lib/useTranslation";
 
 interface JoinButtonProps {
   deedId: string;
@@ -34,6 +35,7 @@ export function JoinButton({
   const [message, setMessage] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const isFull = maxSpots !== null && count >= maxSpots;
 
@@ -127,8 +129,8 @@ export function JoinButton({
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        Event passed
-        {count > 0 && <span> &middot; {count} joined</span>}
+        {t("deed.eventPassed")}
+        {count > 0 && <span> &middot; {t("deed.signedUpCount", { count })}</span>}
       </div>
     );
   }
@@ -156,18 +158,18 @@ export function JoinButton({
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              I&apos;m signed up
+              {t("deed.signedUp")}
             </>
           ) : isFull ? (
-            "Full"
+            t("deed.full")
           ) : isAuthor ? (
-            "Your event"
+            t("deed.yourEvent")
           ) : (
             <>
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              Sign up
+              {t("deed.signUp")}
             </>
           )}
         </button>
@@ -175,7 +177,7 @@ export function JoinButton({
           <svg className="w-3.5 h-3.5 inline mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          {spotsLabel} signed up
+          {maxSpots ? t("deed.spotsCount", { count, max: maxSpots }) : t("deed.signedUpCount", { count })}
         </span>
       </div>
 
@@ -183,20 +185,20 @@ export function JoinButton({
       {showExampleWarning && (
         <div className="mt-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
           <p className="text-xs text-amber-300 font-medium mb-2">
-            This is an example post to show what bragforgood looks like. It&apos;s not a real event.
+            {t("deed.exampleWarning")}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={handleExampleConfirm}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors"
             >
-              Let me try it
+              {t("deed.letMeTryIt")}
             </button>
             <button
               onClick={handleExampleCancel}
               className="px-2 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -205,7 +207,7 @@ export function JoinButton({
       {/* Post-signup hint */}
       {isJoined && !showMessageInput && !showExampleWarning && (
         <p className="mt-1.5 text-[11px] text-[var(--text-tertiary)]">
-          You can sign off or contact the organizer from your profile under Joined Events.
+          {t("deed.profileHint")}
         </p>
       )}
 
@@ -215,7 +217,7 @@ export function JoinButton({
           <div className="flex items-center gap-2">
             <input
               type="text"
-              placeholder="Optional: I'll bring..."
+              placeholder={t("deed.optionalBring")}
               maxLength={200}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -227,13 +229,13 @@ export function JoinButton({
               onClick={handleJoinWithMessage}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors"
             >
-              Sign up
+              {t("deed.signUp")}
             </button>
             <button
               onClick={handleCancelMessage}
               className="px-2 py-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
@@ -244,7 +246,7 @@ export function JoinButton({
               className="rounded border-[var(--border)] bg-[var(--bg-card)] text-sky-500 focus:ring-sky-500/30 w-3.5 h-3.5"
             />
             <span className="text-[11px] text-[var(--text-tertiary)]">
-              Show my name in the participants list
+              {t("deed.showName")}
             </span>
           </label>
         </div>

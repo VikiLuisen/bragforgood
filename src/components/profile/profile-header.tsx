@@ -8,6 +8,7 @@ import { ImpactBadges } from "./impact-badges";
 import { ProfileEditForm } from "./profile-edit-form";
 import { formatDate } from "@/lib/utils";
 import { getKarmaTier } from "@/lib/constants";
+import { useTranslation } from "@/lib/useTranslation";
 import type { UserProfile } from "@/types";
 
 interface ProfileHeaderProps {
@@ -21,6 +22,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
   const [editing, setEditing] = useState(false);
+  const { t } = useTranslation();
   const tier = getKarmaTier(user.karmaScore);
 
   if (editing) {
@@ -47,14 +49,14 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
           </div>
           {user.bio && <p className="text-sm text-[var(--text-secondary)] mt-1">{user.bio}</p>}
           <p className="text-[11px] text-[var(--text-tertiary)] mt-1 font-medium uppercase tracking-wider">
-            Joined {formatDate(user.createdAt)}
+            {t("profile.joined")} {formatDate(user.createdAt)}
           </p>
         </div>
         <div className="flex items-center gap-8 mt-2">
           <KarmaDisplay score={user.karmaScore} />
           <div className="text-center">
             <div className="text-3xl font-extrabold text-[var(--text-primary)]">{user.deedCount}</div>
-            <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-widest font-bold mt-0.5">Posts</div>
+            <div className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-widest font-bold mt-0.5">{t("profile.posts")}</div>
           </div>
           {(user.currentStreak != null && user.longestStreak != null) && (
             <StreakDisplay currentStreak={user.currentStreak} longestStreak={user.longestStreak} />
@@ -72,7 +74,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
             onClick={() => setEditing(true)}
             className="mt-2 px-5 py-2 rounded-xl text-sm font-semibold text-[var(--text-secondary)] bg-[var(--bg-elevated)] border border-[var(--border)] hover:bg-[var(--bg-card-hover)] hover:border-[var(--border-light)] hover:text-[var(--text-primary)] transition-all"
           >
-            Edit Profile
+            {t("profile.editProfile")}
           </button>
         )}
       </div>

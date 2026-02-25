@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/language-context";
+import { useTranslation } from "@/lib/useTranslation";
 import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 import type { LanguageCode } from "@/lib/constants";
 
@@ -13,6 +14,7 @@ interface TranslateButtonProps {
 
 export function TranslateButton({ text, onTranslated, compact }: TranslateButtonProps) {
   const { lang, autoTranslate } = useLanguage();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
   const [cachedTranslation, setCachedTranslation] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export function TranslateButton({ text, onTranslated, compact }: TranslateButton
       className={`inline-flex items-center gap-1 text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors ${
         compact ? "text-[10px]" : "text-[11px]"
       } font-medium`}
-      title={isTranslated ? "Show original" : `Translate to ${langName}`}
+      title={isTranslated ? t("translate.showOriginal") : `${t("translate.translateTo")} ${langName}`}
     >
       {loading ? (
         <div className="w-3 h-3 border border-[var(--accent)] border-t-transparent rounded-full animate-spin" />

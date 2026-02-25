@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { CommentItem } from "./comment-item";
 import { CommentForm } from "./comment-form";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/useTranslation";
 import type { CommentWithUser } from "@/types";
 
 interface InlineCommentSectionProps {
@@ -14,6 +15,7 @@ interface InlineCommentSectionProps {
 }
 
 export function InlineCommentSection({ deedId, commentCount, sessionUserId, onCommentCountChange }: InlineCommentSectionProps) {
+  const { t } = useTranslation();
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -62,7 +64,7 @@ export function InlineCommentSection({ deedId, commentCount, sessionUserId, onCo
 
       {comments.length === 0 ? (
         <p className="text-xs text-[var(--text-tertiary)] py-2">
-          No comments yet. Be the first to leave a kind word!
+          {t("commentSection.noComments")}
         </p>
       ) : (
         <div className="divide-y divide-[var(--border)]">
@@ -74,7 +76,7 @@ export function InlineCommentSection({ deedId, commentCount, sessionUserId, onCo
 
       {hasMore && (
         <Button variant="ghost" size="sm" onClick={loadMore} className="w-full mt-1">
-          Load more comments
+          {t("commentSection.loadMore")}
         </Button>
       )}
     </div>

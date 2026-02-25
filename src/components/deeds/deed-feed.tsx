@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import { DeedCard } from "./deed-card";
+import { useTranslation } from "@/lib/useTranslation";
 import type { DeedWithAuthor } from "@/types";
 
 type FeedFilter = "ALL" | "BRAG" | "CALL_TO_ACTION";
@@ -17,6 +18,7 @@ interface DeedFeedProps {
 }
 
 export function DeedFeed({ initialDeeds, initialCursor, sessionUserId, fetchUrl = "/api/deeds", showFilters = true }: DeedFeedProps) {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<FeedFilter>("ALL");
   const [deeds, setDeeds] = useState(initialDeeds);
   const [cursor, setCursor] = useState(initialCursor);
@@ -59,9 +61,9 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId, fetchUrl 
   }
 
   const filters: { key: FeedFilter; label: string }[] = [
-    { key: "ALL", label: "All" },
-    { key: "BRAG", label: "Brags" },
-    { key: "CALL_TO_ACTION", label: "Calls to Action" },
+    { key: "ALL", label: t("feed.all") },
+    { key: "BRAG", label: t("feed.brags") },
+    { key: "CALL_TO_ACTION", label: t("feed.callsToAction") },
   ];
 
   return (
@@ -90,7 +92,7 @@ export function DeedFeed({ initialDeeds, initialCursor, sessionUserId, fetchUrl 
                     ? "text-sky-400 hover:bg-sky-500/20"
                     : "text-[var(--accent)] hover:bg-[var(--accent-dim)]"
                 }`}
-                title={key === "CALL_TO_ACTION" ? "New Call to Action" : "New Brag"}
+                title={key === "CALL_TO_ACTION" ? t("feed.newCTA") : t("feed.newBrag")}
               >
                 +
               </Link>

@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
+import { useTranslation } from "@/lib/useTranslation";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -34,12 +36,12 @@ export default function ForgotPasswordPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Something went wrong");
+        setError(data.error || t("auth.somethingWentWrong"));
       } else {
         setSuccess(true);
       }
     } catch {
-      setError("Something went wrong");
+      setError(t("auth.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -50,18 +52,18 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-sm animate-fade-in">
         <div className="text-center mb-8">
           <Logo size="lg" href="/" />
-          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">Forgot your password?</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">No worries. Even the best do-gooders forget things.</p>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-6">{t("auth.forgotTitle")}</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{t("auth.forgotSubtitle")}</p>
         </div>
 
         <div className="card p-6">
           {success ? (
             <div className="text-center space-y-3">
               <div className="bg-[var(--accent)]/10 text-[var(--accent)] text-sm p-3 rounded-xl font-medium">
-                If that email is registered, we sent you a reset link. Check your inbox!
+                {t("auth.resetSent")}
               </div>
               <p className="text-xs text-[var(--text-tertiary)]">
-                Didn&apos;t get it? Check your spam folder or try again.
+                {t("auth.checkSpam")}
               </p>
             </div>
           ) : (
@@ -74,25 +76,25 @@ export default function ForgotPasswordPage() {
 
               <Input
                 id="email"
-                label="Email"
+                label={t("auth.email")}
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("auth.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
 
               <Button type="submit" className="w-full" loading={loading}>
-                Send Reset Link
+                {t("auth.sendResetLink")}
               </Button>
             </form>
           )}
         </div>
 
         <p className="text-center text-sm text-[var(--text-secondary)] mt-6">
-          Remember your password?{" "}
+          {t("auth.rememberPassword")}{" "}
           <Link href="/sign-in" className="text-[var(--accent)] hover:brightness-110 font-semibold transition-all">
-            Sign In
+            {t("auth.signIn")}
           </Link>
         </p>
       </div>

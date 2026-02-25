@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { CategoryBadge } from "@/components/deeds/category-badge";
 import { StarDisplay } from "@/components/ratings/star-display";
 import { RatingForm } from "@/components/ratings/rating-form";
+import { useTranslation } from "@/lib/useTranslation";
 import { formatEventDate } from "@/lib/utils";
 import type { DeedCategory } from "@/lib/constants";
 import type { RatingWithUser } from "@/types";
@@ -39,6 +40,7 @@ export interface JoinedEvent {
 }
 
 export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?: (deedId: string) => void }) {
+  const { t } = useTranslation();
   const [showRatingForm, setShowRatingForm] = useState(false);
   const [hasRated, setHasRated] = useState(event.hasRated);
   const [userRating, setUserRating] = useState(event.userRating);
@@ -47,7 +49,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
   const isPast = event.deed.eventDate ? new Date(event.deed.eventDate) < new Date() : false;
 
   async function handleLeave() {
-    if (!confirm("Leave this event? You can always rejoin later.")) return;
+    if (!confirm(t("profile.leaveConfirm") || "Leave this event? You can always rejoin later.")) return;
     setLeaving(true);
     try {
       const res = await fetch(`/api/deeds/${event.deed.id}/participants`, { method: "DELETE" });
@@ -77,16 +79,16 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
         <div className="flex items-center gap-1.5 shrink-0">
           {event.deed.isExample && (
             <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/25">
-              Example
+              {t("deed.example")}
             </span>
           )}
           {!event.isPublic && (
             <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border border-[var(--border)]">
-              Private
+              {t("deed.private")}
             </span>
           )}
           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isPast ? "bg-[var(--bg-elevated)] text-[var(--text-tertiary)]" : "bg-sky-500/10 text-sky-400"}`}>
-            {isPast ? "Passed" : "Upcoming"}
+            {isPast ? t("deed.passed") : t("deed.upcoming")}
           </span>
         </div>
       </div>
@@ -129,7 +131,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
       {/* User's rating */}
       {hasRated && userRating && (
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs text-[var(--text-tertiary)]">Your rating:</span>
+          <span className="text-xs text-[var(--text-tertiary)]">{t("profile.yourRating")}</span>
           <StarDisplay score={userRating} size="sm" />
         </div>
       )}
@@ -142,7 +144,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
             disabled={leaving}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors disabled:opacity-50"
           >
-            {leaving ? "Leaving..." : "Leave"}
+            {leaving ? t("profile.leaving") : t("profile.leave")}
           </button>
         )}
 
@@ -154,7 +156,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            Contact Organizer
+            {t("deed.contactOrganizer")}
           </a>
         )}
 
@@ -171,7 +173,7 @@ export function JoinedEventCard({ event, onLeft }: { event: JoinedEvent; onLeft?
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              Rate Event
+              {t("ratings.rateEvent")}
             </button>
           )
         )}
