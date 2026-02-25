@@ -13,21 +13,28 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");
   const category = searchParams.get("category");
+  const type = searchParams.get("type");
   const limit = Math.min(Number(searchParams.get("limit")) || PAGE_SIZE, 50);
 
   const where = {
     ...(category ? { category } : {}),
+    ...(type ? { type } : {}),
     flagCount: { lt: 3 },
   };
+
+  // For CTA-only filter, sort upcoming events by eventDate ASC
+  const orderBy = type === "CALL_TO_ACTION"
+    ? [{ eventDate: "asc" as const }, { createdAt: "desc" as const }]
+    : [{ createdAt: "desc" as const }];
 
   const deeds = await prisma.deed.findMany({
     where,
     take: limit + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    orderBy: { createdAt: "desc" },
+    orderBy,
     include: {
       author: { select: { id: true, name: true, image: true } },
-      _count: { select: { comments: true } },
+      _count: { select: { comments: true, participants: true } },
       reactions: true,
     },
   });
@@ -48,6 +55,19 @@ export async function GET(request: NextRequest) {
   );
   const karmaMap = Object.fromEntries(karmaCounts.map((k) => [k.id, k.karma]));
 
+  // Check which deeds the current user has joined
+  let joinedDeedIds = new Set<string>();
+  if (session?.user?.id) {
+    const ctaDeedIds = items.filter((d) => d.type === "CALL_TO_ACTION").map((d) => d.id);
+    if (ctaDeedIds.length > 0) {
+      const participations = await prisma.participant.findMany({
+        where: { userId: session.user.id, deedId: { in: ctaDeedIds } },
+        select: { deedId: true },
+      });
+      joinedDeedIds = new Set(participations.map((p) => p.deedId));
+    }
+  }
+
   const formattedDeeds = items.map((deed) => {
     const reactionCounts: Record<string, number> = {};
     reactionTypes.forEach((type) => {
@@ -65,9 +85,17 @@ export async function GET(request: NextRequest) {
       title: deed.title,
       description: deed.description,
       category: deed.category,
-      photoUrl: deed.photoUrl,
+      photoUrls: deed.photoUrls,
       location: deed.location,
       isExample: deed.isExample,
+      type: deed.type,
+      eventDate: deed.eventDate?.toISOString() ?? null,
+      eventEndDate: deed.eventEndDate?.toISOString() ?? null,
+      meetingPoint: deed.meetingPoint,
+      whatToBring: deed.whatToBring,
+      maxSpots: deed.maxSpots,
+      participantCount: deed._count.participants,
+      isJoined: joinedDeedIds.has(deed.id),
       createdAt: deed.createdAt.toISOString(),
       author: { ...deed.author, karmaScore: karmaMap[deed.author.id] || 0 },
       _count: deed._count,
@@ -100,10 +128,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const { title, description, category, photoUrl, location } = parsed.data;
+    const { title, description, category, photoUrls, location, type, eventDate, eventEndDate, meetingPoint, whatToBring, maxSpots } = parsed.data;
 
     // AI moderation check
-    const moderation = await moderateDeed(title, description, category);
+    const moderation = await moderateDeed(title, description, category, type);
     if (!moderation.approved) {
       return NextResponse.json(
         { error: moderation.reason || "This post doesn't appear to be about a good deed. Try again!", moderation: true },
@@ -116,8 +144,14 @@ export async function POST(request: Request) {
         title,
         description,
         category,
-        photoUrl: photoUrl || null,
+        photoUrls: photoUrls || [],
         location: location || null,
+        type: type || "BRAG",
+        eventDate: eventDate ? new Date(eventDate) : null,
+        eventEndDate: eventEndDate ? new Date(eventEndDate) : null,
+        meetingPoint: meetingPoint || null,
+        whatToBring: whatToBring || null,
+        maxSpots: (typeof maxSpots === "number") ? maxSpots : null,
         authorId: session.user.id,
       },
       include: {

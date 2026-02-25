@@ -7,10 +7,11 @@ import { CategoryBadge } from "./category-badge";
 import { ReportButton } from "./report-button";
 import { PostActions } from "./post-actions";
 import { ShareButton } from "./share-button";
+import { JoinButton } from "./join-button";
 import { ReactionBar } from "@/components/reactions/reaction-bar";
 import { TranslateButton } from "@/components/ui/translate-button";
 import { InlineCommentSection } from "@/components/comments/inline-comment-section";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatEventDate } from "@/lib/utils";
 import type { DeedWithAuthor } from "@/types";
 
 interface DeedCardProps {
@@ -22,6 +23,9 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState(deed._count.comments);
+
+  const isCTA = deed.type === "CALL_TO_ACTION";
+  const isPast = isCTA && deed.eventDate ? new Date(deed.eventDate) < new Date() : false;
 
   // Combine title and description for translation
   const originalText = `${deed.title}\n---\n${deed.description}`;
@@ -39,13 +43,13 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
     : deed.description;
 
   return (
-    <article className="feed-item card p-5">
+    <article className={`feed-item card p-5 ${isCTA ? "border-l-4 border-l-sky-500" : ""}`}>
       <div className="flex items-start gap-3.5">
         <Link href={`/profile/${deed.author.id}`} className="shrink-0">
           <Avatar name={deed.author.name} image={deed.author.image} size="md" karmaScore={deed.author.karmaScore} />
         </Link>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
               href={`/profile/${deed.author.id}`}
               className="text-[13px] font-semibold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
@@ -62,6 +66,11 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
             {deed.isExample && (
               <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--accent-dim)] text-[var(--accent)] border border-[rgba(52,211,153,0.15)]">
                 Example
+              </span>
+            )}
+            {isCTA && (
+              <span className="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/20">
+                Call to Action
               </span>
             )}
           </div>
@@ -81,20 +90,63 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
             </span>
           )}
 
-          {deed.photoUrl && (
-            <div className="mt-3 rounded-xl overflow-hidden relative">
-              <img
-                src={deed.photoUrl}
-                alt={deed.title}
-                className="w-full max-h-64 object-cover"
-              />
-              <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
+          {/* CTA event info */}
+          {isCTA && (
+            <div className="mt-3 space-y-1.5 text-[12px]">
+              {deed.eventDate && (
+                <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
+                  <svg className="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>
+                    {formatEventDate(deed.eventDate)}
+                    {deed.eventEndDate && ` — ${formatEventDate(deed.eventEndDate)}`}
+                  </span>
+                </div>
+              )}
+              {deed.meetingPoint && (
+                <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
+                  <svg className="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{deed.meetingPoint}</span>
+                </div>
+              )}
+              {deed.whatToBring && (
+                <div className="flex items-start gap-1.5 text-[var(--text-secondary)]">
+                  <svg className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  <span>Bring: {deed.whatToBring}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {deed.photoUrls && deed.photoUrls.length > 0 && (
+            <div className={`mt-3 gap-1.5 ${deed.photoUrls.length === 1 ? "" : "grid grid-cols-2"}`}>
+              {deed.photoUrls.slice(0, 4).map((url, i) => (
+                <div key={i} className={`rounded-xl overflow-hidden relative ${deed.photoUrls.length === 1 ? "" : i === 0 && deed.photoUrls.length === 3 ? "col-span-2" : ""}`}>
+                  <img
+                    src={url}
+                    alt={`${deed.title} photo ${i + 1}`}
+                    className={`w-full object-cover ${deed.photoUrls.length === 1 ? "max-h-64" : "h-32"}`}
+                  />
+                  <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
+                  {i === 3 && deed.photoUrls.length > 4 && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
+                      <span className="text-white font-bold text-lg">+{deed.photoUrls.length - 4}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
 
           <div className="flex items-center gap-2 mt-3">
             <CategoryBadge category={deed.category} />
-            {deed.location && (
+            {!isCTA && deed.location && (
               <span className="inline-flex items-center gap-1 text-[11px] text-[var(--text-tertiary)]">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -104,6 +156,22 @@ export function DeedCard({ deed, sessionUserId }: DeedCardProps) {
               </span>
             )}
           </div>
+
+          {/* Join button for CTAs */}
+          {isCTA && (
+            <div className="mt-3">
+              <JoinButton
+                deedId={deed.id}
+                initialIsJoined={deed.isJoined}
+                initialCount={deed.participantCount}
+                maxSpots={deed.maxSpots}
+                isAuthor={deed.author.id === sessionUserId}
+                isPast={isPast}
+                sessionUserId={sessionUserId}
+                compact
+              />
+            </div>
+          )}
 
           <div className="mt-3.5 pt-3 border-t border-[var(--border)]">
             <ReactionBar

@@ -1,4 +1,4 @@
-import type { DeedCategory, ReactionType } from "@/lib/constants";
+import type { DeedCategory, DeedType, ReactionType } from "@/lib/constants";
 
 export interface UserProfile {
   id: string;
@@ -11,14 +11,33 @@ export interface UserProfile {
   deedCount: number;
 }
 
+export interface ParticipantInfo {
+  id: string;
+  message: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+}
+
 export interface DeedWithAuthor {
   id: string;
   title: string;
   description: string;
   category: DeedCategory;
-  photoUrl: string | null;
+  photoUrls: string[];
   location: string | null;
   isExample: boolean;
+  type: DeedType;
+  eventDate: string | null;
+  eventEndDate: string | null;
+  meetingPoint: string | null;
+  whatToBring: string | null;
+  maxSpots: number | null;
+  participantCount: number;
+  isJoined: boolean;
   createdAt: string;
   author: {
     id: string;

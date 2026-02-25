@@ -23,10 +23,11 @@ model User {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  deeds     Deed[]
-  reactions Reaction[]
-  comments  Comment[]
-  reports   Report[]
+  deeds        Deed[]
+  reactions    Reaction[]
+  comments     Comment[]
+  reports      Report[]
+  participants Participant[]
 
   @@map("users")
 }
@@ -36,23 +37,31 @@ model Deed {
   title       String
   description String
   category    String   // ENVIRONMENT, HELPING_NEIGHBORS, ANIMAL_WELFARE, VOLUNTEERING, MENTORING, RANDOM_KINDNESS
-  photoUrl    String?
+  photoUrls   String[]  @default([])
   location    String?
   isExample   Boolean  @default(false)
   flagCount   Int      @default(0)
+  type         String    @default("BRAG")  // "BRAG" | "CALL_TO_ACTION"
+  eventDate    DateTime?
+  eventEndDate DateTime?
+  meetingPoint String?
+  whatToBring  String?
+  maxSpots     Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  reactions Reaction[]
-  comments  Comment[]
-  reports   Report[]
+  reactions    Reaction[]
+  comments     Comment[]
+  reports      Report[]
+  participants Participant[]
 
   @@index([authorId])
   @@index([createdAt(sort: Desc)])
   @@index([category])
+  @@index([type])
   @@map("deeds")
 }
 
@@ -103,4 +112,20 @@ model Report {
   @@unique([userId, deedId])
   @@index([deedId])
   @@map("reports")
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  message   String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deedId String
+  deed   Deed   @relation(fields: [deedId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deedId])
+  @@index([deedId])
+  @@map("participants")
 }

@@ -55,7 +55,7 @@ async function main() {
     select: { id: true },
   });
 
-  const newDeeds = [];
+  const newDeeds: { id: string; authorId: string }[] = [];
 
   // Deed 1 - Maya - VOLUNTEERING
   newDeeds.push(await prisma.deed.create({
@@ -65,6 +65,7 @@ async function main() {
         "Our local food bank got a massive delivery and needed hands. Spent my Saturday sorting canned goods, fresh produce, and hygiene items. We packed 200+ family boxes. My back hurts but my heart is full.",
       category: "VOLUNTEERING",
       location: "Tafel Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&q=80"],
       isExample: true,
       authorId: maya.id,
       createdAt: new Date(now - 3 * hour),
@@ -79,6 +80,7 @@ async function main() {
         "Monday mornings are tough so I spent my Sunday evening baking chocolate chip cookies for the entire office. Left them with a note: 'You're doing great. Have a cookie.' Three colleagues said it made their day.",
       category: "RANDOM_KINDNESS",
       location: "Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&q=80", "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80"],
       isExample: true,
       authorId: luca.id,
       createdAt: new Date(now - 6 * hour),
@@ -107,6 +109,7 @@ async function main() {
         "Every Saturday morning, 15 kids from the neighborhood now show up at the court. We practice dribbling, teamwork, and life skills. One kid told me it's the only thing he looks forward to all week. That hit different.",
       category: "MENTORING",
       location: "Sportplatz Hardau, Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80"],
       isExample: true,
       authorId: sam.id,
       createdAt: new Date(now - 14 * hour),
@@ -135,6 +138,7 @@ async function main() {
         "Committed to zero car commutes for February. Rain, snow, didn't matter. 22 work days, 440km total on the bike. Saved roughly 88kg of CO2. My legs are stronger and my mornings are so much better now.",
       category: "ENVIRONMENT",
       location: "Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1471506480208-91b3a4cc78be?w=800&q=80"],
       isExample: true,
       authorId: luca.id,
       createdAt: new Date(now - 28 * hour),
@@ -177,6 +181,7 @@ async function main() {
         "Invited 20 friends to bring clothes they don't wear anymore. Everyone left with 'new' outfits and we donated the leftovers to a refugee center. Fashion doesn't have to mean buying new. One woman's trash is another's treasure.",
       category: "ENVIRONMENT",
       location: "Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=800&q=80", "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80"],
       isExample: true,
       authorId: maya.id,
       createdAt: new Date(now - 50 * hour),
@@ -219,6 +224,7 @@ async function main() {
         "Spring is coming and birds need nesting spots. Spent the weekend building birdhouses from reclaimed wood and hung them in the local park. Already spotted a great tit checking one out this morning!",
       category: "ANIMAL_WELFARE",
       location: "Irchelpark, Zurich",
+      photoUrls: ["https://images.unsplash.com/photo-1520808663317-647b476a81b9?w=800&q=80"],
       isExample: true,
       authorId: nina.id,
       createdAt: new Date(now - 80 * hour),

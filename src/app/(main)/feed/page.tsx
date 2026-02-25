@@ -15,7 +15,7 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { id: true, name: true, image: true } },
-      _count: { select: { comments: true } },
+      _count: { select: { comments: true, participants: true } },
       reactions: true,
     },
   });
@@ -36,6 +36,19 @@ export default async function FeedPage() {
 
   const reactionTypes = Object.keys(REACTION_CONFIG) as ReactionType[];
 
+  // Check which CTAs the current user has joined
+  let joinedDeedIds = new Set<string>();
+  if (session?.user?.id) {
+    const ctaDeedIds = items.filter((d) => d.type === "CALL_TO_ACTION").map((d) => d.id);
+    if (ctaDeedIds.length > 0) {
+      const participations = await prisma.participant.findMany({
+        where: { userId: session.user.id, deedId: { in: ctaDeedIds } },
+        select: { deedId: true },
+      });
+      joinedDeedIds = new Set(participations.map((p) => p.deedId));
+    }
+  }
+
   const formattedDeeds = items.map((deed) => {
     const reactionCounts: Record<string, number> = {};
     reactionTypes.forEach((type) => {
@@ -53,9 +66,17 @@ export default async function FeedPage() {
       title: deed.title,
       description: deed.description,
       category: deed.category,
-      photoUrl: deed.photoUrl,
+      photoUrls: deed.photoUrls,
       location: deed.location,
       isExample: deed.isExample,
+      type: deed.type,
+      eventDate: deed.eventDate?.toISOString() ?? null,
+      eventEndDate: deed.eventEndDate?.toISOString() ?? null,
+      meetingPoint: deed.meetingPoint,
+      whatToBring: deed.whatToBring,
+      maxSpots: deed.maxSpots,
+      participantCount: deed._count.participants,
+      isJoined: joinedDeedIds.has(deed.id),
       createdAt: deed.createdAt.toISOString(),
       author: {
         ...deed.author,

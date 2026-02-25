@@ -25,3 +25,14 @@ export function formatDate(date: Date | string): string {
     year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
   });
 }
+
+export function formatEventDate(date: Date | string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}

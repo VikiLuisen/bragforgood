@@ -5,6 +5,9 @@ export function Footer() {
     <footer className="border-t border-[var(--border)] mt-16">
       <div className="mx-auto max-w-2xl px-4 py-8">
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-[var(--text-tertiary)]">
+          <Link href="/blog" className="hover:text-[var(--accent)] transition-colors">
+            Blog
+          </Link>
           <Link href="/impressum" className="hover:text-[var(--accent)] transition-colors">
             Impressum
           </Link>

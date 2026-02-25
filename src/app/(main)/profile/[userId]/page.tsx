@@ -122,7 +122,7 @@ export default async function ProfilePage({
       title: deed.title,
       description: deed.description,
       category: deed.category,
-      photoUrl: deed.photoUrl,
+      photoUrls: deed.photoUrls,
       location: deed.location,
       isExample: deed.isExample,
       createdAt: deed.createdAt.toISOString(),

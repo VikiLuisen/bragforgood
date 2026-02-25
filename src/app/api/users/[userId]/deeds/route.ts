@@ -53,7 +53,7 @@ export async function GET(
       title: deed.title,
       description: deed.description,
       category: deed.category,
-      photoUrl: deed.photoUrl,
+      photoUrls: deed.photoUrls,
       location: deed.location,
       createdAt: deed.createdAt.toISOString(),
       author: deed.author,

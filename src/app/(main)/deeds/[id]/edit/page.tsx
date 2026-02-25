@@ -20,7 +20,7 @@ export default async function EditDeedPage({
       title: true,
       description: true,
       category: true,
-      photoUrl: true,
+      photoUrls: true,
       location: true,
       authorId: true,
     },
@@ -36,7 +36,7 @@ export default async function EditDeedPage({
         title: deed.title,
         description: deed.description,
         category: deed.category,
-        photoUrl: deed.photoUrl,
+        photoUrls: deed.photoUrls,
         location: deed.location,
       }}
     />

@@ -14,7 +14,8 @@ function getClient(): Anthropic | null {
 export async function moderateDeed(
   title: string,
   description: string,
-  category: string
+  category: string,
+  type: string = "BRAG"
 ): Promise<ModerationResult> {
   const client = getClient();
   if (!client) {
@@ -22,11 +23,30 @@ export async function moderateDeed(
     return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 
-  try {
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 200,
-      system: `You are a content moderator for "bragforgood", a social platform where users brag about their good deeds — acts of kindness, volunteering, helping others, environmental care, community service, mentoring, and similar positive actions. The tone is cheeky and fun, but the content must still be genuinely good.
+  const isCTA = type === "CALL_TO_ACTION";
+
+  const systemPrompt = isCTA
+    ? `You are a content moderator for "bragforgood", a social platform where users organize group activities for good — cleanups, volunteering, food drives, community events, and similar positive group actions.
+
+Analyze the submitted Call to Action and determine if it describes a LEGITIMATE group activity.
+
+APPROVE if the post:
+- Describes a group volunteer event, cleanup, food drive, community gathering, or similar positive group activity
+- Takes place in a public setting (park, community center, beach, street, etc.)
+- Is genuinely aimed at doing good for the community
+- Uses an enthusiastic or rallying tone (that's encouraged here!)
+
+REJECT if the post:
+- Suggests a private 1-on-1 meeting at someone's home or private location
+- Contains a home address or private residential address
+- Sounds like a personal date or private meetup rather than a group activity
+- Is spam, self-promotion, or advertising
+- Contains hate speech, negativity, or offensive content
+- Describes harmful, illegal, or dangerous activities
+- Seems designed to lure people to an unsafe situation
+
+Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason": "brief friendly explanation of why this doesn't fit"}`
+    : `You are a content moderator for "bragforgood", a social platform where users brag about their good deeds — acts of kindness, volunteering, helping others, environmental care, community service, mentoring, and similar positive actions. The tone is cheeky and fun, but the content must still be genuinely good.
 
 Analyze the submitted post and determine if it describes a GENUINE good deed or positive action.
 
@@ -43,7 +63,13 @@ REJECT if the post:
 - Describes harmful, illegal, or unethical actions
 - Is clearly fake or trolling
 
-Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason": "brief friendly explanation of why this doesn't fit"}`,
+Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason": "brief friendly explanation of why this doesn't fit"}`;
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 200,
+      system: systemPrompt,
       messages: [
         {
           role: "user",

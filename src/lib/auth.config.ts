@@ -8,12 +8,18 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const { pathname } = nextUrl;
+
+      // Public pages: viewing individual deed detail pages
+      const isPublicDeedView = /^\/deeds\/[^/]+$/.test(pathname);
+
+      // Protected paths (require login)
       const protectedPaths = ["/deeds", "/profile", "/leaderboard", "/admin"];
       const isProtected = protectedPaths.some((path) =>
-        nextUrl.pathname.startsWith(path)
+        pathname.startsWith(path)
       );
 
-      if (isProtected && !isLoggedIn) {
+      if (isProtected && !isPublicDeedView && !isLoggedIn) {
         return Response.redirect(new URL("/sign-in", nextUrl));
       }
 

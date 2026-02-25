@@ -18,6 +18,13 @@ export const REACTION_CONFIG = {
 
 export type ReactionType = keyof typeof REACTION_CONFIG;
 
+export const DEED_TYPES = {
+  BRAG: { label: "Brag", icon: "megaphone" },
+  CALL_TO_ACTION: { label: "Call to Action", icon: "calendar" },
+} as const;
+
+export type DeedType = keyof typeof DEED_TYPES;
+
 export const PAGE_SIZE = 10;
 
 // Karma tier system — thresholds, titles, and glow ring styles

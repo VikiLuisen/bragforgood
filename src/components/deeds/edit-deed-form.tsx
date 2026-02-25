@@ -19,7 +19,7 @@ interface EditDeedFormProps {
     title: string;
     description: string;
     category: string;
-    photoUrl: string | null;
+    photoUrls: string[];
     location: string | null;
   };
 }
@@ -30,26 +30,31 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
   const [title, setTitle] = useState(deed.title);
   const [description, setDescription] = useState(deed.description);
   const [category, setCategory] = useState(deed.category);
-  const [photoUrl, setPhotoUrl] = useState(deed.photoUrl || "");
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoUrls, setPhotoUrls] = useState<string[]>(deed.photoUrls);
+  const [pendingFiles, setPendingFiles] = useState<{ file: File; preview: string }[]>([]);
   const [location, setLocation] = useState(deed.location || "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const totalPhotos = photoUrls.length + pendingFiles.length;
+
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    if (!file.type.startsWith("image/")) {
-      setErrors((prev) => ({ ...prev, photo: "Please select an image file" }));
-      return;
-    }
+    const remaining = 5 - totalPhotos;
+    const toAdd = files.slice(0, remaining);
 
-    if (file.size > 4 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, photo: "Image must be less than 4MB" }));
-      return;
+    for (const file of toAdd) {
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({ ...prev, photo: "Please select image files only" }));
+        return;
+      }
+      if (file.size > 4 * 1024 * 1024) {
+        setErrors((prev) => ({ ...prev, photo: "Each image must be less than 4MB" }));
+        return;
+      }
     }
 
     setErrors((prev) => {
@@ -57,66 +62,72 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
       delete next.photo;
       return next;
     });
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    setPhotoUrl("");
+
+    const newPending = toAdd.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPendingFiles((prev) => [...prev, ...newPending]);
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function clearPhoto() {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    setPhotoUrl("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+  function removeExistingPhoto(index: number) {
+    setPhotoUrls((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function uploadPhoto(): Promise<string | undefined> {
-    if (!photoFile) return photoUrl || undefined;
+  function removePendingPhoto(index: number) {
+    setPendingFiles((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  }
+
+  async function uploadPendingPhotos(): Promise<string[]> {
+    if (pendingFiles.length === 0) return [];
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", photoFile);
+    const urls: string[] = [];
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+    for (const { file } of pendingFiles) {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
 
-    setUploading(false);
-
-    if (!res.ok) {
-      let message = "Failed to upload image";
-      try {
-        const data = await res.json();
-        message = data.error || message;
-      } catch {
-        if (res.status === 413) message = "Image is too large. Try a smaller file.";
+      if (!res.ok) {
+        setUploading(false);
+        let message = "Failed to upload image";
+        try { const data = await res.json(); message = data.error || message; } catch {}
+        throw new Error(message);
       }
-      throw new Error(message);
+
+      const data = await res.json();
+      urls.push(data.url);
     }
 
-    const data = await res.json();
-    return data.url;
+    setUploading(false);
+    return urls;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
 
-    let finalPhotoUrl: string | undefined;
+    let uploadedUrls: string[] = [];
     try {
-      finalPhotoUrl = await uploadPhoto();
+      uploadedUrls = await uploadPendingPhotos();
     } catch (err) {
       setErrors({ photo: err instanceof Error ? err.message : "Failed to upload image" });
       return;
     }
 
+    const allPhotoUrls = [...photoUrls, ...uploadedUrls];
+
     const parsed = createDeedSchema.safeParse({
       title,
       description,
       category,
-      photoUrl: finalPhotoUrl || undefined,
+      photoUrls: allPhotoUrls,
       location: location || undefined,
     });
 
@@ -148,8 +159,6 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
     router.push(`/deeds/${deed.id}`);
     router.refresh();
   }
-
-  const displayPhoto = photoPreview || photoUrl;
 
   return (
     <div className="animate-fade-in">
@@ -207,44 +216,59 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
             {errors.category && <p className="text-xs text-red-400 font-medium">{errors.category}</p>}
           </div>
 
-          {/* Photo */}
+          {/* Photos */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-              Photo (optional)
+              Photos (up to 5)
             </label>
 
-            {displayPhoto ? (
-              <div className="relative rounded-xl overflow-hidden">
-                <img
-                  src={displayPhoto}
-                  alt="Preview"
-                  className="w-full max-h-64 object-cover rounded-xl"
-                />
-                <button
-                  type="button"
-                  onClick={clearPhoto}
-                  className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+            {(photoUrls.length > 0 || pendingFiles.length > 0) && (
+              <div className="grid grid-cols-3 gap-2">
+                {photoUrls.map((url, i) => (
+                  <div key={`existing-${i}`} className="relative rounded-xl overflow-hidden aspect-square">
+                    <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingPhoto(i)}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+                {pendingFiles.map((pf, i) => (
+                  <div key={`pending-${i}`} className="relative rounded-xl overflow-hidden aspect-square">
+                    <img src={pf.preview} alt={`New photo ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removePendingPhoto(i)}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
               </div>
-            ) : (
+            )}
+
+            {totalPhotos < 5 && (
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--accent)] bg-[var(--bg-card)] px-4 py-8 text-center transition-colors group"
+                className="w-full rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--accent)] bg-[var(--bg-card)] px-4 py-6 text-center transition-colors group"
               >
-                <svg className="w-8 h-8 mx-auto text-[var(--text-tertiary)] group-hover:text-[var(--accent)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                <svg className="w-6 h-6 mx-auto text-[var(--text-tertiary)] group-hover:text-[var(--accent)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                <p className="text-sm text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] mt-2 font-medium transition-colors">
-                  Tap to add a photo
+                <p className="text-sm text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)] mt-1.5 font-medium transition-colors">
+                  {totalPhotos === 0 ? "Add photos" : "Add more photos"}
                 </p>
-                <p className="text-[10px] text-[var(--text-tertiary)] mt-1">
-                  JPEG, PNG, WebP, or GIF up to 4MB
+                <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
+                  {5 - totalPhotos} remaining
                 </p>
               </button>
             )}
@@ -253,7 +277,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
+              multiple
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -271,7 +295,7 @@ export function EditDeedForm({ deed }: EditDeedFormProps) {
 
           <div className="flex gap-3">
             <Button type="submit" className="flex-1" size="lg" loading={loading || uploading}>
-              {uploading ? "Uploading photo..." : "Save Changes"}
+              {uploading ? "Uploading photos..." : "Save Changes"}
             </Button>
             <Button
               type="button"

@@ -42,7 +42,7 @@ export async function GET(
     title: deed.title,
     description: deed.description,
     category: deed.category,
-    photoUrl: deed.photoUrl,
+    photoUrls: deed.photoUrls,
     location: deed.location,
     createdAt: deed.createdAt.toISOString(),
     author: deed.author,
@@ -84,7 +84,7 @@ export async function PUT(
       );
     }
 
-    const { title, description, category, photoUrl, location } = parsed.data;
+    const { title, description, category, photoUrls, location } = parsed.data;
 
     const updated = await prisma.deed.update({
       where: { id },
@@ -92,7 +92,7 @@ export async function PUT(
         title,
         description,
         category,
-        photoUrl: photoUrl || null,
+        photoUrls: photoUrls || [],
         location: location || null,
       },
     });
