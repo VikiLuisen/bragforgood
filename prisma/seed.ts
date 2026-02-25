@@ -140,7 +140,7 @@ async function main() {
       photoUrls: [ "https://images.unsplash.com/photo-1568219557405-376e23e4f7cf?w=800&q=80"],
       isExample: true,
       authorId: lisa.id,
-      createdAt: new Date(now - 18 * hour),
+      createdAt: new Date(now - 1 * hour),
     },
   });
 

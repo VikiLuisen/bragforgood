@@ -32,7 +32,7 @@ async function main() {
       meetingPoint: "Strandbad Mythenquai entrance, Zurich",
       whatToBring: "Reusable gloves, water bottle, sunscreen. I'll bring trash bags and pickers.",
       maxSpots: 25,
-      photoUrls: ["https://images.unsplash.com/photo-1617953141700-ace03f0c5540?w=800&q=80"],
+      photoUrls: ["https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=800&q=80"],
       isExample: true,
       authorId: maya.id,
       createdAt: new Date(now - 2 * hour),
