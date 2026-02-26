@@ -6,6 +6,15 @@ function getResend() {
 
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function formatCalendarDate(d: Date): string {
   return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
@@ -60,7 +69,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
             Reset Password
           </a>
           <p style="color: #71717a; font-size: 12px; margin-top: 24px;">
-            This link expires in 1 hour.
+            This link expires in 30 minutes.
           </p>
         </div>
         <p style="color: #52525b; font-size: 11px; text-align: center; margin-top: 24px;">
@@ -107,9 +116,9 @@ export async function sendEventJoinConfirmation(params: {
         <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 32px 24px;">
           <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 8px; text-align: center;">You're in!</h2>
           <p style="color: #a1a1aa; font-size: 14px; text-align: center; margin: 0 0 24px;">
-            Hey ${params.userName}, you've signed up for:
+            Hey ${escapeHtml(params.userName)}, you've signed up for:
           </p>
-          <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 20px; color: #e4e4e7;">${params.eventTitle}</h3>
+          <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 20px; color: #e4e4e7;">${escapeHtml(params.eventTitle)}</h3>
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px 0; color: #71717a; font-size: 13px; vertical-align: top; width: 24px;">&#128197;</td>
@@ -117,12 +126,12 @@ export async function sendEventJoinConfirmation(params: {
             </tr>
             <tr>
               <td style="padding: 8px 0; color: #71717a; font-size: 13px; vertical-align: top;">&#128205;</td>
-              <td style="padding: 8px 0; color: #a1a1aa; font-size: 13px;">${params.meetingPoint}</td>
+              <td style="padding: 8px 0; color: #a1a1aa; font-size: 13px;">${escapeHtml(params.meetingPoint)}</td>
             </tr>
             ${params.whatToBring ? `
             <tr>
               <td style="padding: 8px 0; color: #71717a; font-size: 13px; vertical-align: top;">&#127890;</td>
-              <td style="padding: 8px 0; color: #a1a1aa; font-size: 13px;"><strong style="color: #e4e4e7;">Bring:</strong> ${params.whatToBring}</td>
+              <td style="padding: 8px 0; color: #a1a1aa; font-size: 13px;"><strong style="color: #e4e4e7;">Bring:</strong> ${escapeHtml(params.whatToBring!)}</td>
             </tr>
             ` : ""}
           </table>

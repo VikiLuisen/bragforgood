@@ -45,7 +45,6 @@ export default async function ProfilePage({
     select: {
       id: true,
       name: true,
-      email: true,
       image: true,
       bio: true,
       currentStreak: true,
@@ -77,7 +76,6 @@ export default async function ProfilePage({
   const profile = {
     id: user.id,
     name: user.name,
-    email: user.email,
     image: user.image,
     bio: user.bio,
     createdAt: user.createdAt.toISOString(),
@@ -141,7 +139,7 @@ export default async function ProfilePage({
     include: {
       deed: {
         include: {
-          author: { select: { id: true, name: true, image: true, email: true } },
+          author: { select: { id: true, name: true, image: true, ...(session?.user?.id === userId ? { email: true } : {}) } },
           _count: { select: { participants: true } },
         },
       },

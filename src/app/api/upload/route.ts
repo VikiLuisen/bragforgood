@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 4 * 1024 * 1024; // 4MB (Vercel serverless limit is 4.5MB)
@@ -10,6 +11,10 @@ export async function POST(request: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!rateLimit(`upload:${session.user.id}`, 20, 3600000)) {
+      return NextResponse.json({ error: "Too many uploads. Slow down!" }, { status: 429 });
     }
 
     const formData = await request.formData();

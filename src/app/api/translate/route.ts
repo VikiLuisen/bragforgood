@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 import Anthropic from "@anthropic-ai/sdk";
 import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 import type { LanguageCode } from "@/lib/constants";
@@ -8,6 +9,10 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!rateLimit(`translate:${session.user.id}`, 30, 3600000)) {
+    return NextResponse.json({ error: "Too many translations. Slow down!" }, { status: 429 });
   }
 
   try {

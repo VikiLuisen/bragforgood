@@ -13,6 +13,12 @@ export async function GET(
   }
 
   const { userId } = await params;
+
+  // Only allow users to view their own joined events
+  if (userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { searchParams } = request.nextUrl;
   const cursor = searchParams.get("cursor");
   const limit = Math.min(Number(searchParams.get("limit")) || PAGE_SIZE, 50);
