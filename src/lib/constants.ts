@@ -4,6 +4,7 @@ export const DEED_CATEGORIES = {
   ANIMAL_WELFARE: { label: "Animals", color: "bg-amber-500/15 text-amber-400 border border-amber-500/20" },
   VOLUNTEERING: { label: "Volunteering", color: "bg-purple-500/15 text-purple-400 border border-purple-500/20" },
   MENTORING: { label: "Mentoring", color: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20" },
+  HELPING: { label: "Helping", color: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/20" },
   RANDOM_KINDNESS: { label: "Kindness", color: "bg-pink-500/15 text-pink-400 border border-pink-500/20" },
 } as const;
 
@@ -47,6 +48,7 @@ export const IMPACT_BADGES: Record<string, { singular: string; plural: string }>
   ANIMAL_WELFARE: { singular: "animal rescue", plural: "animal rescues" },
   VOLUNTEERING: { singular: "volunteer shift", plural: "volunteer shifts" },
   MENTORING: { singular: "person mentored", plural: "people mentored" },
+  HELPING: { singular: "person helped", plural: "people helped" },
   RANDOM_KINDNESS: { singular: "act of kindness", plural: "acts of kindness" },
 };
 
