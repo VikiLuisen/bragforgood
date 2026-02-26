@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { resetPasswordSchema } from "@/lib/validations/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 async function hashToken(token: string): Promise<string> {
   const encoded = new TextEncoder().encode(token);
@@ -56,11 +57,13 @@ export async function POST(request: Request) {
       },
     });
 
+    logger.info("auth.password_reset_complete", { userId: user.id });
+
     return NextResponse.json({
       message: "Password updated successfully",
     });
   } catch (err) {
-    console.error("Reset password error:", err);
+    logger.error("auth.reset_password_error", { error: String(err) });
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }

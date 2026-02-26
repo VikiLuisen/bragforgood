@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 4 * 1024 * 1024; // 4MB (Vercel serverless limit is 4.5MB)
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: blob.url });
   } catch (err) {
-    console.error("Upload error:", err);
+    logger.error("upload.error", { error: String(err) });
     return NextResponse.json(
       { error: "Failed to upload image" },
       { status: 500 }

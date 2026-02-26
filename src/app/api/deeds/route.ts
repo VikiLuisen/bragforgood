@@ -6,6 +6,7 @@ import { moderateDeed } from "@/lib/moderation";
 import { PAGE_SIZE, REACTION_CONFIG } from "@/lib/constants";
 import type { ReactionType } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -197,7 +198,7 @@ export async function POST(request: Request) {
         });
       }
     } catch (e) {
-      console.error("Streak update error:", e);
+      logger.error("deed.streak_update_error", { error: String(e) });
     }
 
     return NextResponse.json(deed, { status: 201 });

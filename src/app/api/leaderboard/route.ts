@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export async function GET() {
   const session = await auth();
@@ -83,7 +84,7 @@ export async function GET() {
 
     return NextResponse.json({ leaderboard: result, month: monthName });
   } catch (err) {
-    console.error("Leaderboard error:", err);
+    logger.error("leaderboard.error", { error: String(err) });
     return NextResponse.json({ error: "Failed to load leaderboard" }, { status: 500 });
   }
 }

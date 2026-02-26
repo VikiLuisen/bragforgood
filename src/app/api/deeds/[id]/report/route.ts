@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   request: Request,
@@ -59,6 +60,8 @@ export async function POST(
       data: { flagCount: { increment: 1 } },
     }),
   ]);
+
+  logger.info("report.created", { reporterId: session.user.id, deedId, reason });
 
   return NextResponse.json({ success: true });
 }

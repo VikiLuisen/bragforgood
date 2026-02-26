@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ADMIN_EMAIL } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function DELETE(
   _req: Request,
@@ -25,6 +26,8 @@ export async function DELETE(
   }
 
   await prisma.deed.delete({ where: { id } });
+
+  logger.info("admin.post_deleted", { adminEmail: session.user.email, postId: id });
 
   return NextResponse.json({ success: true });
 }

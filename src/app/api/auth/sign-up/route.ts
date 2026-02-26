@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { signUpSchema } from "@/lib/validations/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: Request) {
   try {
@@ -43,6 +44,8 @@ export async function POST(request: Request) {
         hashedPassword,
       },
     });
+
+    logger.info("auth.signup", { userId: user.id });
 
     return NextResponse.json(
       { id: user.id, name: user.name, email: user.email },

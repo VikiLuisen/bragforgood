@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ADMIN_EMAIL } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function GET() {
   const session = await auth();
@@ -13,6 +14,8 @@ export async function GET() {
   if (!rateLimit(`admin:${session.user.id}`, 30, 3600000)) {
     return NextResponse.json({ error: "Too many admin requests" }, { status: 429 });
   }
+
+  logger.info("admin.dashboard_access", { adminEmail: session.user.email });
 
   const [users, posts, reactionCount] = await Promise.all([
     prisma.user.findMany({

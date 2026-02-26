@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { logger } from "@/lib/logger";
 
 interface ModerationResult {
   approved: boolean;
@@ -23,7 +24,7 @@ export async function moderateDeed(
 ): Promise<ModerationResult> {
   const client = getClient();
   if (!client) {
-    console.warn("Moderation: ANTHROPIC_API_KEY not set — rejecting content (fail-secure)");
+    logger.warn("moderation.error", { error: "ANTHROPIC_API_KEY not set — rejecting content (fail-secure)" });
     return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 
@@ -85,12 +86,16 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
     const text =
       response.content[0].type === "text" ? response.content[0].text : "";
     const parsed = JSON.parse(stripCodeFences(text));
-    return {
+    const result = {
       approved: parsed.approved === true,
       reason: parsed.reason,
     };
+    if (!result.approved) {
+      logger.info("moderation.rejected", { type: "deed", title, reason: result.reason });
+    }
+    return result;
   } catch (err) {
-    console.error("Moderation API error:", err);
+    logger.error("moderation.error", { error: String(err) });
     return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 }
@@ -98,7 +103,7 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
 export async function moderateComment(body: string): Promise<ModerationResult> {
   const client = getClient();
   if (!client) {
-    console.warn("Moderation: ANTHROPIC_API_KEY not set — rejecting comment (fail-secure)");
+    logger.warn("moderation.error", { error: "ANTHROPIC_API_KEY not set — rejecting comment (fail-secure)" });
     return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 
@@ -133,12 +138,16 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
     const text =
       response.content[0].type === "text" ? response.content[0].text : "";
     const parsed = JSON.parse(stripCodeFences(text));
-    return {
+    const result = {
       approved: parsed.approved === true,
       reason: parsed.reason,
     };
+    if (!result.approved) {
+      logger.info("moderation.rejected", { type: "comment", reason: result.reason });
+    }
+    return result;
   } catch (err) {
-    console.error("Comment moderation API error:", err);
+    logger.error("moderation.error", { error: String(err) });
     return { approved: false, reason: "Content moderation is temporarily unavailable. Please try again later." };
   }
 }

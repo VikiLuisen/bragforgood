@@ -1,6 +1,8 @@
 // Simple in-memory rate limiter for serverless
 // Tracks requests per key (IP or userId) within a sliding window
 
+import { logger } from "@/lib/logger";
+
 const requests = new Map<string, number[]>();
 
 // Clean up old entries periodically
@@ -19,6 +21,7 @@ export function rateLimit(key: string, maxRequests: number, windowMs: number): b
   const valid = timestamps.filter((t) => now - t < windowMs);
 
   if (valid.length >= maxRequests) {
+    logger.warn("rate_limit.exceeded", { key, limit: maxRequests });
     return false; // Rate limited
   }
 

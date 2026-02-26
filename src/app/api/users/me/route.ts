@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProfileSchema } from "@/lib/validations/auth";
+import { logger } from "@/lib/logger";
 
 export async function PUT(request: Request) {
   try {
@@ -35,7 +36,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(user);
   } catch (err) {
-    console.error("Profile update error:", err);
+    logger.error("profile.update_error", { error: String(err) });
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }
@@ -54,7 +55,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Account deletion error:", err);
+    logger.error("account.deletion_error", { error: String(err) });
     return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
   }
 }

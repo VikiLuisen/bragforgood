@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 function generateToken(): string {
   const bytes = new Uint8Array(32);
@@ -59,9 +60,11 @@ export async function POST(request: Request) {
 
     await sendPasswordResetEmail(email, rawToken);
 
+    logger.info("auth.password_reset_request", { email: email.replace(/(.{2}).*(@.*)/, "$1***$2") });
+
     return successResponse;
   } catch (err) {
-    console.error("Forgot password error:", err);
+    logger.error("auth.forgot_password_error", { error: String(err) });
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }
