@@ -5,6 +5,10 @@ interface ModerationResult {
   reason?: string;
 }
 
+function stripCodeFences(text: string): string {
+  return text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+}
+
 function getClient(): Anthropic | null {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
@@ -80,7 +84,7 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
 
     const text =
       response.content[0].type === "text" ? response.content[0].text : "";
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(stripCodeFences(text));
     return {
       approved: parsed.approved === true,
       reason: parsed.reason,
@@ -128,7 +132,7 @@ Respond ONLY with valid JSON: {"approved": true} or {"approved": false, "reason"
 
     const text =
       response.content[0].type === "text" ? response.content[0].text : "";
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(stripCodeFences(text));
     return {
       approved: parsed.approved === true,
       reason: parsed.reason,
